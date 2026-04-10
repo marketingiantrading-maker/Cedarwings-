@@ -3,137 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cedarwings SAS - Clocking</title>
+  <title>Cedarwings SAS - Smart Clocking</title>
   <style>
-    :root{--bg:#f4f7fb;--card:#fff;--text:#1f2937;--muted:#64748b;--line:#dbe3ef;--blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--orange:#d97706;--red:#dc2626;--gray:#64748b}
-    *{box-sizing:border-box} body{font-family:Arial,sans-serif;background:var(--bg);padding:30px;color:var(--text);margin:0}
-    .box{max-width:900px;margin:auto;background:var(--card);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-    h1,h2,h3{margin-top:0}.sub{color:var(--muted);margin-top:-6px;margin-bottom:16px;line-height:1.5}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1 / -1}
+    :root{
+      --bg:#f4f7fb;--card:#fff;--text:#1f2937;--muted:#64748b;--line:#dbe3ef;
+      --blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--orange:#d97706;--red:#dc2626;--gray:#64748b;
+      --sky:#0ea5e9;--purple:#7c3aed;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;background:linear-gradient(180deg,#eef5ff,#f4f7fb);padding:24px;color:var(--text);margin:0}
+    .wrap{max-width:1100px;margin:auto}
+    .card{background:var(--card);border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.08);padding:22px;border:1px solid #e7eef8}
+    .top{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .full{grid-column:1/-1}
+    h1,h2,h3{margin:0 0 10px}
+    .sub{color:var(--muted);line-height:1.5;margin-bottom:14px}
     label{display:block;margin-bottom:6px;font-weight:700;font-size:14px}
-    input,select,textarea,button{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit}
+    input,select,textarea,button{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);font-size:14px;font-family:inherit}
     textarea{min-height:88px;resize:vertical}
     button{border:none;cursor:pointer;color:#fff;font-weight:700;transition:.2s ease}
-    .primary{background:var(--blue)} .primary:hover{background:var(--blue2)}
-    .secondary{background:var(--gray)} .secondary:hover{background:#475569}
-    .warn{background:var(--orange)} .warn:hover{background:#b45309}
-    .success{background:var(--green)} .success:hover{background:#15803d}
-    .danger{background:var(--red)} .danger:hover{background:#b91c1c}
-    .actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
-    .status-box{margin-top:18px;padding:14px;border-radius:12px;background:#eef4ff;border:1px solid #cfe0ff}
-    .status{font-weight:700;margin-bottom:6px}.mini{color:var(--muted);font-size:13px;line-height:1.5}
-    .rule-box{margin:16px 0 18px;border:1px solid var(--line);border-radius:12px;background:#fafcff;padding:14px}
-    .rule-box ul{margin:8px 0 0 18px;color:var(--muted);line-height:1.6;padding:0}
-    .pill{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px;margin-bottom:6px}
-    .p-blue{background:#dbeafe;color:#1d4ed8}.p-orange{background:#ffedd5;color:#c2410c}.p-green{background:#dcfce7;color:#166534}.p-red{background:#fee2e2;color:#991b1b}
-    .helper{font-size:12px;color:var(--muted);margin-top:4px}.section-title{margin-top:22px;margin-bottom:10px;font-size:16px}
-    @media(max-width:760px){body{padding:14px}.grid,.actions{grid-template-columns:1fr}}
+    .primary{background:linear-gradient(135deg,var(--blue),var(--sky))}
+    .primary:hover{filter:brightness(.96)}
+    .secondary{background:linear-gradient(135deg,var(--gray),#475569)}
+    .secondary:hover{filter:brightness(.96)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin:0 6px 6px 0}
+    .p-blue{background:#dbeafe;color:#1d4ed8}.p-green{background:#dcfce7;color:#166534}.p-orange{background:#ffedd5;color:#c2410c}.p-purple{background:#ede9fe;color:#6d28d9}
+    .statusbox{margin-top:14px;padding:14px;border-radius:14px;background:#eef4ff;border:1px solid #cfe0ff}
+    .status{font-weight:700;margin-bottom:6px}
+    .mini{font-size:13px;line-height:1.5;color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+    .stat{background:linear-gradient(180deg,#f8fbff,#ffffff);border:1px solid var(--line);border-radius:14px;padding:12px}
+    .stat .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .stat .value{font-size:22px;font-weight:800}
+    .timeline{margin-top:14px;display:grid;gap:10px}
+    .item{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdff}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .machine-note{margin-top:4px;font-size:12px;color:var(--muted)}
+    .lock{background:#f8fafc}
+    .accent{background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(14,165,233,.08));border:1px solid #dbeafe;padding:10px 12px;border-radius:12px}
+    @media(max-width:900px){.top,.stats,.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-<div class="box">
-  <h1>Employee Clocking</h1>
-  <div class="sub">
-    Time management logic aligned with the functional rules:
-    workday starts at <strong>08:00</strong>, regular hours end at <strong>17:00</strong>, first-task delay becomes waste time,
-    idle gaps become waste time, and work after 17:00 becomes overtime.
+<div class="wrap">
+  <div class="top">
+    <div class="card">
+      <h1>Employee Clocking</h1>
+      <div class="sub">
+        Default session type is productive, but you can switch to waste time with a waste category.
+        Employee is automatic and cannot be changed. Batch ID is generated automatically. One clock button only.
+      </div>
+      <button class="secondary" onclick="window.location.href='index.html'">← Back to Dashboard</button>
+
+      <div style="margin-top:16px" class="grid">
+        <div>
+          <label>Employee</label>
+          <input id="employee" class="lock" readonly />
+          <div class="machine-note">Automatic employee. Not editable.</div>
+        </div>
+        <div>
+          <label>Session Type</label>
+          <select id="sessionType">
+            <option value="productive" selected>productive</option>
+            <option value="waste">waste</option>
+          </select>
+          <div class="machine-note">Default is productive.</div>
+        </div>
+
+        <div>
+          <label>Order No *</label>
+          <input id="orderNo" placeholder="Example: ORD-1048" />
+        </div>
+        <div>
+          <label>Machine Code *</label>
+          <input id="machine" placeholder="Example: RP601 / TF-01 / QC Desk" />
+          <div class="machine-note">Work type will be filled automatically from machine code.</div>
+        </div>
+
+        <div>
+          <label>Work Type</label>
+          <input id="workType" class="lock" readonly placeholder="Auto from machine" />
+        </div>
+        <div>
+          <label>Batch ID</label>
+          <input id="batchId" class="lock" readonly placeholder="Auto-generated" />
+        </div>
+
+        <div class="full">
+          <label>Waste Time Category</label>
+          <select id="wasteCategory">
+            <option value="">Select category</option>
+            <option>Waiting for instructions</option>
+            <option>Waiting for machine</option>
+            <option>Waiting for material</option>
+            <option>Cleaning</option>
+            <option>Maintenance</option>
+            <option>Internal movement</option>
+            <option>Break</option>
+            <option>Idle / no task assigned</option>
+            <option>Rework / correction</option>
+            <option>Other</option>
+          </select>
+          <div class="machine-note">Use only when session type = waste.</div>
+        </div>
+
+        <div class="full">
+          <label>Task / Operation Description</label>
+          <textarea id="desc" placeholder="Optional description"></textarea>
+          <div class="machine-note">Task description is not mandatory.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <button class="primary" id="clockBtn">Clock New / Continue</button>
+      </div>
+
+      <div class="statusbox">
+        <div class="status" id="status">No active session</div>
+        <div class="mini" id="statusDetails">Enter order number and machine code, then click clock.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Live Day Info</h3>
+      <div>
+        <span class="pill p-blue">Day Start: 08:00</span>
+        <span class="pill p-orange">End: 17:00</span>
+        <span class="pill p-green">Auto pipeline</span>
+        <span class="pill p-purple">Auto batch ID</span>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="label">Current Time</div><div class="value" id="currentTime">--:--:--</div></div>
+        <div class="stat"><div class="label">Attendance Anchor</div><div class="value" id="attendanceStart">08:00</div></div>
+        <div class="stat"><div class="label">First Start Today</div><div class="value" id="firstStart">--:--</div></div>
+        <div class="stat"><div class="label">Last Start</div><div class="value" id="lastStart">--:--</div></div>
+      </div>
+
+      <div class="accent" style="margin-top:14px">
+        <h3 style="margin-bottom:8px">Today Summary</h3>
+        <div class="mini" id="summaryText">No sessions loaded yet.</div>
+      </div>
+    </div>
   </div>
 
-  <button class="secondary" onclick="window.location.href='index.html'">← Back to Dashboard</button>
-
-  <div class="rule-box">
-    <strong>Active Rules</strong>
-    <ul>
-      <li>First task delay from 08:00 is auto-recorded as waste time.</li>
-      <li>Work Type, Machine, Order Number, and Task Description are mandatory for productive work.</li>
-      <li>After ending a task, if no new task starts, a waste session can be opened immediately.</li>
-      <li>Overtime is counted only after 17:00 and is stored separately.</li>
-    </ul>
-  </div>
-
-  <div class="grid">
-    <div>
-      <label>Employee</label>
-      <select id="employee">
-        <option value="">Select employee</option>
-        <option>Maya</option>
-        <option>Rami</option>
-        <option>Nadine</option>
-        <option>Georges</option>
-      </select>
+  <div class="card" style="margin-top:16px">
+    <h2>Today Pipeline / Timeline</h2>
+    <div class="sub">Every session for the current day is shown here in sequence and updates automatically.</div>
+    <div id="timeline" class="timeline">
+      <div class="item mini">No records yet.</div>
     </div>
-
-    <div>
-      <label>Session Type to Start</label>
-      <select id="sessionType">
-        <option value="productive">Productive Work</option>
-        <option value="waste">Waste Time</option>
-      </select>
-      <div class="helper">Use Waste Time for waiting, break, idle, cleaning, rework, etc.</div>
-    </div>
-
-    <div>
-      <label>Work Type / Category</label>
-      <input id="workType" placeholder="Example: 3D Printing / Thermoforming / QC" />
-    </div>
-
-    <div>
-      <label>Machine</label>
-      <input id="machine" placeholder="Example: RP601" />
-    </div>
-
-    <div>
-      <label>Order No</label>
-      <input id="orderNo" placeholder="Example: ORD-1048" />
-    </div>
-
-    <div>
-      <label>Batch ID</label>
-      <input id="batchId" placeholder="Example: B-240601" />
-    </div>
-
-    <div class="full">
-      <label>Waste Time Category</label>
-      <select id="wasteCategory">
-        <option value="">Select category</option>
-        <option>Waiting for instructions</option>
-        <option>Waiting for machine</option>
-        <option>Waiting for material</option>
-        <option>Cleaning</option>
-        <option>Maintenance</option>
-        <option>Internal movement</option>
-        <option>Break</option>
-        <option>Idle / no task assigned</option>
-        <option>Rework / correction</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <div class="full">
-      <label>Task / Operation Description</label>
-      <textarea id="desc" placeholder="Describe the task or reason for waste time"></textarea>
-    </div>
-  </div>
-
-  <div class="section-title">Quick Actions</div>
-  <div class="actions">
-    <button class="primary" id="startBtn">Start Session</button>
-    <button class="success" id="startWasteBtn">Start Waste Now</button>
-    <button class="warn" id="endBtn">End Current Session</button>
-    <button class="danger" id="closeWasteBtn">Close Waste Session</button>
-  </div>
-
-  <div class="section-title">Day Status</div>
-  <div>
-    <span class="pill p-blue">Start: 08:00</span>
-    <span class="pill p-orange">End: 17:00</span>
-    <span class="pill p-green">Productive tracked</span>
-    <span class="pill p-red">Overtime separated</span>
-  </div>
-
-  <div class="status-box">
-    <div class="status" id="status">No active session</div>
-    <div class="mini" id="statusDetails">Waiting for employee action.</div>
   </div>
 </div>
 
@@ -144,45 +164,97 @@ import { SUPABASE_CONFIG } from './config.js'
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
 const employeeEl = document.getElementById('employee')
 const sessionTypeEl = document.getElementById('sessionType')
-const workTypeEl = document.getElementById('workType')
 const machineEl = document.getElementById('machine')
+const workTypeEl = document.getElementById('workType')
 const orderNoEl = document.getElementById('orderNo')
 const batchIdEl = document.getElementById('batchId')
 const wasteCategoryEl = document.getElementById('wasteCategory')
 const descEl = document.getElementById('desc')
 const statusEl = document.getElementById('status')
 const statusDetailsEl = document.getElementById('statusDetails')
+const timelineEl = document.getElementById('timeline')
+const firstStartEl = document.getElementById('firstStart')
+const lastStartEl = document.getElementById('lastStart')
+const summaryTextEl = document.getElementById('summaryText')
+const currentTimeEl = document.getElementById('currentTime')
 const STORAGE_KEY = 'cedarwings_active_session'
+const LOGIN_EMPLOYEE_KEY = 'cedarwings_logged_employee'
+const DAY_ANCHOR_PREFIX = 'cedarwings_day_anchor_'
 
+const MACHINE_WORKTYPE_MAP = {
+  'RP601':'3D Printing','RP602':'3D Printing','TF-01':'Thermoforming','TF01':'Thermoforming',
+  'QC DESK':'Quality Control','QC':'Quality Control','TRIM-01':'Trimming','LASER-01':'Laser Marking','PACK-01':'Packaging'
+}
+
+function dayKey(date = new Date()) { return date.toISOString().slice(0,10) }
+function startOfToday() { const d = new Date(); d.setHours(0,0,0,0); return d }
+function endOfToday() { const d = new Date(); d.setHours(23,59,59,999); return d }
+function officialStart(date = new Date()) { const d = new Date(date); d.setHours(8,0,0,0); return d }
+function officialEnd(date = new Date()) { const d = new Date(date); d.setHours(17,0,0,0); return d }
 function saveActiveSession(session){localStorage.setItem(STORAGE_KEY, JSON.stringify(session))}
-function getActiveSession(){const raw=localStorage.getItem(STORAGE_KEY); return raw?JSON.parse(raw):null}
+function getActiveSession(){const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):null}
 function clearActiveSession(){localStorage.removeItem(STORAGE_KEY)}
 function setStatus(title,details=''){statusEl.textContent=title;statusDetailsEl.textContent=details}
-function isWorkingDay(date=new Date()){const d=date.getDay();return d>=1&&d<=5}
-function startOfOfficialDay(date=new Date()){const d=new Date(date);d.setHours(8,0,0,0);return d}
-function endOfOfficialDay(date=new Date()){const d=new Date(date);d.setHours(17,0,0,0);return d}
-function minutesBetween(a,b){return Math.max(0,Math.round((b-a)/60000))}
-function validateProductiveFields(){
-  if(!employeeEl.value||!workTypeEl.value||!machineEl.value||!orderNoEl.value||!descEl.value){
-    alert('Employee, Work Type, Machine, Order No, and Description are mandatory for productive work.')
+function formatTime(iso){ if(!iso) return '--:--'; return new Date(iso).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) }
+function formatTimeSec(date){ return new Date(date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) }
+function minutesBetween(a,b){ return Math.max(0, Math.round((b-a)/60000)) }
+function detectWorkType(machineCode){
+  const raw = (machineCode || '').trim()
+  if(!raw) return ''
+  const upper = raw.toUpperCase()
+  if(MACHINE_WORKTYPE_MAP[upper]) return MACHINE_WORKTYPE_MAP[upper]
+  if(upper.startsWith('RP')) return '3D Printing'
+  if(upper.startsWith('TF')) return 'Thermoforming'
+  if(upper.includes('QC')) return 'Quality Control'
+  if(upper.includes('TRIM')) return 'Trimming'
+  if(upper.includes('LASER')) return 'Laser Marking'
+  if(upper.includes('PACK')) return 'Packaging'
+  return 'Production'
+}
+function generateBatchId() {
+  const now = new Date()
+  const part = now.toISOString().replace(/[-:TZ.]/g,'').slice(2,14)
+  return `B-${part}`
+}
+function ensureEmployeeLock() {
+  let emp = localStorage.getItem(LOGIN_EMPLOYEE_KEY)
+  if(!emp){
+    emp = prompt('Enter the logged-in employee name for this device:')
+    if(!emp) emp = 'Employee'
+    localStorage.setItem(LOGIN_EMPLOYEE_KEY, emp)
+  }
+  employeeEl.value = emp
+}
+function ensureDayAnchor() {
+  const key = DAY_ANCHOR_PREFIX + dayKey()
+  let anchor = localStorage.getItem(key)
+  if(!anchor){
+    anchor = officialStart().toISOString()
+    localStorage.setItem(key, anchor)
+  }
+  return anchor
+}
+function validateClock() {
+  if(!employeeEl.value){ alert('Employee is required.'); return false }
+  if(!orderNoEl.value.trim()){ alert('Order number is mandatory.'); return false }
+  if(!machineEl.value.trim()){ alert('Machine code is mandatory.'); return false }
+  if(sessionTypeEl.value === 'waste' && !wasteCategoryEl.value){
+    alert('Waste category is mandatory when session type is waste.')
     return false
   }
   return true
 }
-function validateWasteFields(){
-  if(!employeeEl.value){alert('Select employee.');return false}
-  if(!wasteCategoryEl.value){alert('Select waste category.');return false}
-  return true
-}
-function buildCommonPayload(startedAt, endedAt, sessionType, description){
+function buildPayload(startedAt, endedAt=null, sessionType='productive') {
+  const isWaste = sessionType === 'waste'
   return {
     employee_name: employeeEl.value,
     session_type: sessionType,
-    work_type: workTypeEl.value || (sessionType === 'waste' ? 'Waste Time' : ''),
-    machine: machineEl.value || null,
-    order_no: orderNoEl.value || null,
-    batch_id: batchIdEl.value || null,
-    task_description: description || descEl.value || null,
+    work_type: isWaste ? 'Waste Time' : (workTypeEl.value || detectWorkType(machineEl.value) || 'Production'),
+    machine: machineEl.value.trim() || null,
+    order_no: orderNoEl.value.trim() || null,
+    batch_id: batchIdEl.value.trim() || generateBatchId(),
+    task_description: descEl.value.trim() || null,
+    waste_category: isWaste ? wasteCategoryEl.value : null,
     started_at: startedAt.toISOString(),
     ended_at: endedAt ? endedAt.toISOString() : null
   }
@@ -196,87 +268,152 @@ async function updateSessionEnd(id, endedAt){
   const { error } = await supabase.from('time_sessions').update({ ended_at: endedAt.toISOString() }).eq('id', id)
   if(error) throw error
 }
-async function autoCreateFirstDelayWaste(now){
-  const dayStart = startOfOfficialDay(now)
-  if(now <= dayStart) return
-  const todayKey = `cedarwings_first_delay_${employeeEl.value}_${now.toISOString().slice(0,10)}`
-  if(localStorage.getItem(todayKey)) return
-  const minutes = minutesBetween(dayStart, now)
-  if(minutes <= 0) return
-  const payload = buildCommonPayload(dayStart, now, 'waste', `Automatic waste time before first task. Category: Idle / no task assigned. Delay from 08:00 = ${minutes} minutes.`)
-  payload.work_type = 'Waste Time'
-  payload.machine = null
-  payload.order_no = null
-  payload.batch_id = null
-  await insertSession(payload)
-  localStorage.setItem(todayKey, '1')
-}
-async function startSession(typeOverride=null){
-  const now = new Date()
-  if(!isWorkingDay(now)){
-    const proceed = confirm('Today looks like a non-standard working day. Continue anyway?')
-    if(!proceed) return
+async function loadTodaySessions() {
+  const { data, error } = await supabase
+    .from('time_sessions')
+    .select('*')
+    .eq('employee_name', employeeEl.value)
+    .gte('started_at', startOfToday().toISOString())
+    .lte('started_at', endOfToday().toISOString())
+    .order('started_at', { ascending: true })
+
+  if(error){
+    timelineEl.innerHTML = `<div class="item mini">Error loading sessions: ${error.message}</div>`
+    return []
   }
-  const type = typeOverride || sessionTypeEl.value
-  const active = getActiveSession()
-  if(active){alert('There is already an active session. End it first.'); return}
-  if(type === 'productive'){
-    if(!validateProductiveFields()) return
-    await autoCreateFirstDelayWaste(now)
-  } else {
-    if(!validateWasteFields()) return
+
+  if(!data || !data.length){
+    timelineEl.innerHTML = '<div class="item mini">No records yet for today.</div>'
+    firstStartEl.textContent = '--:--'
+    lastStartEl.textContent = '--:--'
+    summaryTextEl.textContent = 'No sessions loaded yet.'
+    return []
   }
-  const description = type === 'waste' ? `Waste Time - ${wasteCategoryEl.value}${descEl.value ? ' - ' + descEl.value : ''}` : descEl.value
-  const payload = buildCommonPayload(now, null, type, description)
-  if(type === 'waste'){payload.work_type = 'Waste Time'}
-  try{
-    const row = await insertSession(payload)
-    saveActiveSession({id: row?.id || null, type, started_at: now.toISOString(), employee: employeeEl.value})
-    setStatus(`${type === 'productive' ? 'Productive' : 'Waste'} session started`, `${employeeEl.value} • ${type === 'productive' ? workTypeEl.value : wasteCategoryEl.value} • ${now.toLocaleTimeString()}`)
-  } catch(error){alert(error.message)}
+
+  firstStartEl.textContent = formatTime(data[0].started_at)
+  lastStartEl.textContent = formatTime(data[data.length - 1].started_at)
+
+  let totalMinutes = 0
+  timelineEl.innerHTML = data.map(row => {
+    const started = new Date(row.started_at)
+    const ended = row.ended_at ? new Date(row.ended_at) : null
+    const mins = ended ? minutesBetween(started, ended) : 0
+    totalMinutes += mins
+    const color = row.session_type === 'overtime' ? 'p-purple' : (row.session_type === 'waste' ? 'p-orange' : 'p-green')
+    return `
+      <div class="item">
+        <div class="row">
+          <strong>${row.order_no || '-'}</strong>
+          <span class="mini">${row.machine || '-'}</span>
+          <span class="mini">${row.work_type || '-'}</span>
+          <span class="pill ${color}">${row.session_type}</span>
+          ${row.waste_category ? `<span class="pill p-orange">${row.waste_category}</span>` : ''}
+        </div>
+        <div class="row mini" style="margin-top:6px">
+          <span>Start: ${formatTime(row.started_at)}</span>
+          <span>End: ${formatTime(row.ended_at)}</span>
+          <span>Batch: ${row.batch_id || '-'}</span>
+          <span>Duration: ${mins} min</span>
+        </div>
+        <div class="mini" style="margin-top:6px">${row.task_description || 'No description'}</div>
+      </div>
+    `
+  }).join('')
+
+  const firstDelay = minutesBetween(officialStart(), new Date(data[0].started_at))
+  summaryTextEl.textContent = `Sessions today: ${data.length} • Total recorded: ${totalMinutes} min • First start delay from 08:00: ${Math.max(0, firstDelay)} min.`
+  return data
 }
-async function endCurrentSession(forceWastePrompt=true){
+async function closeCurrentIfAny(now = new Date()) {
   const active = getActiveSession()
-  if(!active || !active.id){alert('No active session'); return}
-  const now = new Date()
-  const overtimeStart = endOfOfficialDay(now)
+  if(!active || !active.id) return false
+
   const start = new Date(active.started_at)
+  const endNormal = officialEnd(now)
+
+  if(active.session_type === 'productive' && now > endNormal && start < endNormal){
+    await updateSessionEnd(active.id, endNormal)
+    const overtimePayload = {
+      employee_name: active.employee,
+      session_type: 'overtime',
+      work_type: active.work_type || null,
+      machine: active.machine || null,
+      order_no: active.order_no || null,
+      batch_id: active.batch_id || null,
+      task_description: active.task_description || null,
+      waste_category: null,
+      started_at: endNormal.toISOString(),
+      ended_at: now.toISOString()
+    }
+    await insertSession(overtimePayload)
+    setStatus('Previous session closed with overtime', `Previous work was closed at 17:00 and overtime recorded until ${formatTimeSec(now)}.`)
+  } else {
+    await updateSessionEnd(active.id, now)
+    setStatus('Previous session closed', `Previous session closed at ${formatTimeSec(now)}.`)
+  }
+
+  clearActiveSession()
+  return true
+}
+async function clockNewOrContinue() {
+  if(!validateClock()) return
+
+  const now = new Date()
+  workTypeEl.value = detectWorkType(machineEl.value)
+  if(!batchIdEl.value.trim()) batchIdEl.value = generateBatchId()
+
   try{
-    if(active.type === 'productive' && now > overtimeStart && start < overtimeStart){
-      await updateSessionEnd(active.id, overtimeStart)
-      const overtimePayload = buildCommonPayload(overtimeStart, now, 'overtime', `Overtime continuation after 17:00. ${descEl.value || ''}`.trim())
-      await insertSession(overtimePayload)
-      setStatus('Session ended with overtime split', `Regular work closed at 17:00 and overtime recorded until ${now.toLocaleTimeString()}.`)
-    } else {
-      await updateSessionEnd(active.id, now)
-      setStatus('Session ended', `${active.type} session closed at ${now.toLocaleTimeString()}.`)
-    }
-    clearActiveSession()
-    if(forceWastePrompt){
-      const openWaste = confirm('Do you want to open Waste Time now until the next task starts?')
-      if(openWaste){
-        sessionTypeEl.value = 'waste'
-        if(!wasteCategoryEl.value) wasteCategoryEl.value = 'Idle / no task assigned'
-        await startSession('waste')
-      }
-    }
-  } catch(error){alert(error.message)}
+    await closeCurrentIfAny(now)
+
+    const payload = buildPayload(now, null, sessionTypeEl.value)
+    const row = await insertSession(payload)
+
+    saveActiveSession({
+      id: row?.id || null,
+      employee: employeeEl.value,
+      started_at: now.toISOString(),
+      session_type: sessionTypeEl.value,
+      order_no: payload.order_no,
+      machine: payload.machine,
+      batch_id: payload.batch_id,
+      work_type: payload.work_type,
+      task_description: payload.task_description
+    })
+
+    setStatus(
+      `New ${sessionTypeEl.value} session started`,
+      `${employeeEl.value} • Order ${payload.order_no} • ${payload.work_type} • ${formatTimeSec(now)}`
+    )
+    await loadTodaySessions()
+  }catch(error){
+    alert(error.message)
+  }
 }
-document.getElementById('startBtn').onclick = () => startSession()
-document.getElementById('startWasteBtn').onclick = () => {sessionTypeEl.value='waste'; if(!wasteCategoryEl.value) wasteCategoryEl.value='Idle / no task assigned'; startSession('waste')}
-document.getElementById('endBtn').onclick = () => endCurrentSession(true)
-document.getElementById('closeWasteBtn').onclick = async () => {
-  const active = getActiveSession()
-  if(!active || active.type !== 'waste'){alert('No active waste session'); return}
-  await endCurrentSession(false)
-}
-window.addEventListener('load', () => {
+function tickClock() { currentTimeEl.textContent = formatTimeSec(new Date()) }
+
+machineEl.addEventListener('input', () => { workTypeEl.value = detectWorkType(machineEl.value) })
+sessionTypeEl.addEventListener('change', () => {
+  if(sessionTypeEl.value !== 'waste') wasteCategoryEl.value = ''
+})
+document.getElementById('clockBtn').addEventListener('click', clockNewOrContinue)
+
+window.addEventListener('load', async () => {
+  ensureEmployeeLock()
+  const anchor = ensureDayAnchor()
+  document.getElementById('attendanceStart').textContent = formatTime(anchor)
+  tickClock()
+  setInterval(tickClock, 1000)
+
   const active = getActiveSession()
   if(active){
-    setStatus(`Active ${active.type} session detected`, `${active.employee} • started at ${new Date(active.started_at).toLocaleTimeString()}`)
+    setStatus('Active session detected', `${active.employee} • Started ${formatTime(active.started_at)} • Order ${active.order_no || '-'}`)
   } else {
-    setStatus('No active session', 'Waiting for employee action.')
+    setStatus('No active session', 'Enter order number and machine code, then click clock.')
   }
+
+  batchIdEl.value = generateBatchId()
+  await loadTodaySessions()
+  setInterval(loadTodaySessions, 15000)
 })
 </script>
 </body>
