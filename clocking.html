@@ -40,21 +40,26 @@
     .choice-grid,.btn-grid{display:flex;flex-wrap:wrap;gap:8px}
     .step-btn,.waste-btn{
       text-align:center;cursor:pointer;font-weight:700;border-radius:999px;padding:8px 12px;transition:.2s ease;width:auto;
-      display:inline-flex;align-items:center;justify-content:center;min-height:38px
+      display:inline-flex;align-items:center;justify-content:center;min-height:38px;border:1px solid transparent
     }
-    .step-btn{
-      border:1px solid #c7d2fe;background:#eef2ff;color:#1e3a8a;
-    }
-    .waste-btn{
-      border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;
-    }
-    .step-btn small,.waste-btn small{display:none}
+    .step-btn{border-color:#c7d2fe;background:#eef2ff;color:#1e3a8a}
+    .waste-btn{border-color:#fed7aa;background:#fff7ed;color:#9a3412}
     .step-btn.active{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.18)}
     .waste-btn.active{border-color:#ea580c;background:#ea580c;color:#fff;box-shadow:0 6px 14px rgba(234,88,12,.18)}
     .step-btn[disabled]{opacity:.45;cursor:not-allowed;background:#f8fafc;color:#64748b;border-color:#e2e8f0}
     .statusbox{margin-top:14px;padding:14px;border-radius:14px;background:#eef4ff;border:1px solid #cfe0ff}
     .workflow-box{margin-top:10px;padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}
-    @media(max-width:980px){.top,.stats,.choice-grid,.btn-grid{grid-template-columns:1fr}}
+    .flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .flow-step{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:12px;font-weight:700;color:var(--muted)}
+    .flow-step.done{background:#dcfce7;color:#166534;border-color:#bbf7d0}
+    .flow-step.current{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+    .flow-step.locked{background:#f8fafc;color:#94a3b8;border-color:#e5e7eb}
+    .summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+    .summary-box{padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff}
+    .summary-box.good{background:#f0fdf4;border-color:#bbf7d0}
+    .summary-box.warn{background:#fff7ed;border-color:#fed7aa}
+    .summary-box .big{font-size:24px;font-weight:800}
+    @media(max-width:980px){.top,.stats,.summary-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -63,9 +68,8 @@
     <div class="card">
       <h1>Employee Clocking</h1>
       <div class="sub">
-        The system follows the production sequence for each order:
+        Enter the order number, then select the next allowed productive step or a waste button. The system follows this sequence:
         <strong>Printing → Cleaning → Thermoforming → Line Cut → Laser Marking → Packaging</strong>.
-        After you enter an order number, only the next allowed productive step is available.
       </div>
       <button class="secondary" onclick="window.location.href='index.html'">← Back to Dashboard</button>
 
@@ -83,22 +87,30 @@
         <div class="mini" style="margin-top:6px">Enter order number first. The system will load the next allowed step for that order.</div>
 
         <div class="workflow-box">
-          <div class="mini"><strong>Current workflow for this order</strong></div>
+          <div class="mini"><strong>Order workflow</strong></div>
           <div style="margin-top:8px">
             <span class="pill p-blue" id="lastCompletedPill">Last completed: none</span>
             <span class="pill p-green" id="nextAllowedPill">Next allowed: Printing</span>
+          </div>
+          <div class="flow" id="flowView">
+            <span class="flow-step current">Printing</span>
+            <span class="flow-step locked">Cleaning</span>
+            <span class="flow-step locked">Thermoforming</span>
+            <span class="flow-step locked">Line Cut</span>
+            <span class="flow-step locked">Laser Marking</span>
+            <span class="flow-step locked">Packaging</span>
           </div>
         </div>
 
         <div style="margin-top:14px">
           <label>Next Productive Step</label>
           <div class="choice-grid">
-            <button type="button" class="step-btn" data-step="Printing" data-machine="3D Printing Machine 1" data-code="P1">Printing</button>
-            <button type="button" class="step-btn" data-step="Cleaning" data-machine="Cleaning Station" data-code="C1">Cleaning</button>
-            <button type="button" class="step-btn" data-step="Thermoforming" data-machine="Thermoforming Machine 1" data-code="T1">Thermoforming</button>
-            <button type="button" class="step-btn" data-step="Line Cut" data-machine="Line Cut Station" data-code="L1">Line Cut</button>
-            <button type="button" class="step-btn" data-step="Laser Marking" data-machine="Laser Marking Station" data-code="LM1">Laser Marking</button>
-            <button type="button" class="step-btn" data-step="Packaging" data-machine="Packaging Station" data-code="PK1">Packaging</button>
+            <button type="button" class="step-btn" data-step="Printing" data-machine="3D Printing Machine 1">Printing</button>
+            <button type="button" class="step-btn" data-step="Cleaning" data-machine="Cleaning Station">Cleaning</button>
+            <button type="button" class="step-btn" data-step="Thermoforming" data-machine="Thermoforming Machine 1">Thermoforming</button>
+            <button type="button" class="step-btn" data-step="Line Cut" data-machine="Line Cut Station">Line Cut</button>
+            <button type="button" class="step-btn" data-step="Laser Marking" data-machine="Laser Marking Station">Laser Marking</button>
+            <button type="button" class="step-btn" data-step="Packaging" data-machine="Packaging Station">Packaging</button>
           </div>
         </div>
 
@@ -106,7 +118,7 @@
           <label>Waste Time Buttons</label>
           <div class="btn-grid">
             <button type="button" class="waste-btn" data-waste="Waiting for next job">W1 Waiting</button>
-            <button type="button" class="waste-btn" data-waste="Cleaning">W2 Cleaning</button>
+            <button type="button" class="waste-btn" data-waste="General cleaning">W2 Cleaning</button>
             <button type="button" class="waste-btn" data-waste="Waiting for machine">W3 Machine</button>
             <button type="button" class="waste-btn" data-waste="Waiting for material">W4 Material</button>
             <button type="button" class="waste-btn" data-waste="Break">W5 Break</button>
@@ -118,26 +130,11 @@
       <div class="section">
         <div class="section-title">Auto-Filled Details</div>
         <div class="choice-grid">
-          <div>
-            <label>Session Type</label>
-            <input id="sessionType" class="lock" readonly />
-          </div>
-          <div>
-            <label>Work Type</label>
-            <input id="workType" class="lock" readonly />
-          </div>
-          <div>
-            <label>Machine / Source</label>
-            <input id="machineDisplay" class="lock" readonly />
-          </div>
-          <div>
-            <label>Batch ID</label>
-            <input id="batchId" class="lock" readonly />
-          </div>
-          <div class="full">
-            <label>Waste Category</label>
-            <input id="wasteCategory" class="lock" readonly />
-          </div>
+          <input id="sessionType" class="lock" readonly placeholder="Session type" />
+          <input id="workType" class="lock" readonly placeholder="Work type" />
+          <input id="machineDisplay" class="lock" readonly placeholder="Machine / source" />
+          <input id="batchId" class="lock" readonly placeholder="Batch ID" />
+          <input id="wasteCategory" class="lock" readonly placeholder="Waste category" />
         </div>
       </div>
 
@@ -153,7 +150,7 @@
 
       <div class="statusbox">
         <div class="status" id="status">No active session</div>
-        <div class="mini" id="statusDetails">Enter order number. The next allowed productive step will appear automatically. Waste buttons are always available.</div>
+        <div class="mini" id="statusDetails">Enter order number. The next allowed productive step will be unlocked automatically.</div>
       </div>
     </div>
 
@@ -183,15 +180,27 @@
       </div>
 
       <div class="section" style="margin-top:14px">
-        <div class="section-title">Today Summary</div>
-        <div class="mini" id="summaryText">No sessions loaded yet.</div>
+        <div class="section-title">Day Summary</div>
+        <div class="summary-grid">
+          <div class="summary-box good">
+            <div class="mini">Productive Time</div>
+            <div class="big" id="productiveTotal">00:00</div>
+            <div class="mini">Total productive minutes today</div>
+          </div>
+          <div class="summary-box warn">
+            <div class="mini">Non-Productive Time</div>
+            <div class="big" id="nonProductiveTotal">00:00</div>
+            <div class="mini">Waste + non-productive minutes today</div>
+          </div>
+        </div>
+        <div class="mini" id="summaryText" style="margin-top:10px">No sessions loaded yet.</div>
       </div>
     </div>
   </div>
 
   <div class="card" style="margin-top:16px">
     <h2>Today Pipeline / Timeline</h2>
-    <div class="sub">Every session for the current day is shown here in sequence and updates automatically.</div>
+    <div class="sub">Sessions are grouped below so the employee can quickly understand what was done today.</div>
     <div id="timeline" class="timeline">
       <div class="item mini">No records yet.</div>
     </div>
@@ -203,7 +212,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { SUPABASE_CONFIG } from './config.js'
 
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
-
 const WORKFLOW_STEPS = ['Printing','Cleaning','Thermoforming','Line Cut','Laser Marking','Packaging']
 
 const employeeEl = document.getElementById('employee')
@@ -220,17 +228,19 @@ const timelineEl = document.getElementById('timeline')
 const firstStartEl = document.getElementById('firstStart')
 const lastStartEl = document.getElementById('lastStart')
 const summaryTextEl = document.getElementById('summaryText')
+const productiveTotalEl = document.getElementById('productiveTotal')
+const nonProductiveTotalEl = document.getElementById('nonProductiveTotal')
 const currentTimeEl = document.getElementById('currentTime')
 const currentJobTextEl = document.getElementById('currentJobText')
 const openSessionTypeEl = document.getElementById('openSessionType')
 const openSessionTimeEl = document.getElementById('openSessionTime')
 const lastCompletedPillEl = document.getElementById('lastCompletedPill')
 const nextAllowedPillEl = document.getElementById('nextAllowedPill')
+const flowViewEl = document.getElementById('flowView')
 
 const STORAGE_KEY = 'cedarwings_active_session'
 const LOGIN_EMPLOYEE_KEY = 'cedarwings_logged_employee'
 const DAY_ANCHOR_PREFIX = 'cedarwings_day_anchor_'
-
 let selectedConfig = null
 
 function dayKey(date = new Date()) { return date.toISOString().slice(0,10) }
@@ -251,6 +261,11 @@ function formatDuration(ms){
   const m = String(Math.floor((total%3600)/60)).padStart(2,'0')
   const s = String(total%60).padStart(2,'0')
   return `${h}:${m}:${s}`
+}
+function formatMinutesAsHM(mins){
+  const h = String(Math.floor(mins/60)).padStart(2,'0')
+  const m = String(mins%60).padStart(2,'0')
+  return `${h}:${m}`
 }
 function generateBatchId() {
   const now = new Date()
@@ -279,7 +294,6 @@ function setProductiveSelection(btn) {
   document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'))
   document.querySelectorAll('.waste-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
-
   selectedConfig = {
     session_type: 'productive',
     machine: btn.dataset.machine,
@@ -295,7 +309,6 @@ function setWasteSelection(btn) {
   document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'))
   document.querySelectorAll('.waste-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
-
   selectedConfig = {
     session_type: 'waste',
     machine: btn.dataset.waste,
@@ -307,6 +320,14 @@ function setWasteSelection(btn) {
   workTypeEl.value = 'Waste Time'
   wasteCategoryEl.value = btn.dataset.waste
 }
+function renderFlow(lastCompleted, nextStep){
+  flowViewEl.innerHTML = WORKFLOW_STEPS.map(step => {
+    let cls = 'locked'
+    if(lastCompleted && WORKFLOW_STEPS.indexOf(step) <= WORKFLOW_STEPS.indexOf(lastCompleted)) cls = 'done'
+    if(nextStep === step) cls = 'current'
+    return `<span class="flow-step ${cls}">${step}</span>`
+  }).join('')
+}
 function lockWorkflowButtons(nextStep) {
   document.querySelectorAll('.step-btn').forEach(btn => {
     const allowed = btn.dataset.step === nextStep
@@ -316,7 +337,7 @@ function lockWorkflowButtons(nextStep) {
 }
 async function loadOrderWorkflow() {
   const orderNo = orderNoEl.value.trim()
-  selectedConfig = None
+  selectedConfig = null
   sessionTypeEl.value = ''
   workTypeEl.value = ''
   machineDisplayEl.value = ''
@@ -327,6 +348,7 @@ async function loadOrderWorkflow() {
     lockWorkflowButtons('Printing')
     lastCompletedPillEl.textContent = 'Last completed: none'
     nextAllowedPillEl.textContent = 'Next allowed: Printing'
+    renderFlow(null, 'Printing')
     return
   }
 
@@ -339,6 +361,7 @@ async function loadOrderWorkflow() {
   if(error){
     setStatus('Workflow load error', error.message)
     lockWorkflowButtons('Printing')
+    renderFlow(null, 'Printing')
     return
   }
 
@@ -349,6 +372,7 @@ async function loadOrderWorkflow() {
 
   lastCompletedPillEl.textContent = `Last completed: ${lastCompleted || 'none'}`
   nextAllowedPillEl.textContent = `Next allowed: ${nextStep || 'Completed'}`
+  renderFlow(lastCompleted, nextStep)
   if(nextStep){
     lockWorkflowButtons(nextStep)
   } else {
@@ -390,6 +414,7 @@ function clearEntryFields() {
   document.querySelectorAll('.step-btn,.waste-btn').forEach(b => { b.classList.remove('active'); b.disabled = false })
   lastCompletedPillEl.textContent = 'Last completed: none'
   nextAllowedPillEl.textContent = 'Next allowed: Printing'
+  renderFlow(null, 'Printing')
 }
 function updateOpenSessionPanel() {
   const active = getActiveSession()
@@ -430,6 +455,8 @@ async function loadTodaySessions() {
     timelineEl.innerHTML = '<div class="item mini">No records yet for today.</div>'
     firstStartEl.textContent = '--:--'
     lastStartEl.textContent = '--:--'
+    productiveTotalEl.textContent = '00:00'
+    nonProductiveTotalEl.textContent = '00:00'
     summaryTextEl.textContent = 'No sessions loaded yet.'
     return []
   }
@@ -437,21 +464,26 @@ async function loadTodaySessions() {
   firstStartEl.textContent = formatTime(data[0].started_at)
   lastStartEl.textContent = formatTime(data[data.length - 1].started_at)
 
-  let totalMinutes = 0
+  let productiveMinutes = 0
+  let nonProductiveMinutes = 0
+
   timelineEl.innerHTML = data.map(row => {
     const started = new Date(row.started_at)
     const ended = row.ended_at ? new Date(row.ended_at) : null
     const mins = ended ? minutesBetween(started, ended) : 0
-    totalMinutes += mins
+    if(row.session_type === 'productive') productiveMinutes += mins
+    if(row.session_type === 'waste') nonProductiveMinutes += mins
     const color = row.session_type === 'overtime' ? 'p-purple' : (row.session_type === 'waste' ? 'p-orange' : 'p-green')
+    const title = row.session_type === 'waste'
+      ? `Waste • ${row.waste_category || 'No category'}`
+      : `${row.work_type || '-'}`
     return `
       <div class="item">
         <div class="row">
           <strong>${row.order_no || '-'}</strong>
+          <span class="mini">${title}</span>
           <span class="mini">${row.machine || '-'}</span>
-          <span class="mini">${row.work_type || '-'}</span>
           <span class="pill ${color}">${row.session_type}</span>
-          ${row.waste_category ? `<span class="pill p-orange">${row.waste_category}</span>` : ''}
         </div>
         <div class="row mini" style="margin-top:6px">
           <span>Start: ${formatTime(row.started_at)}</span>
@@ -464,8 +496,11 @@ async function loadTodaySessions() {
     `
   }).join('')
 
+  productiveTotalEl.textContent = formatMinutesAsHM(productiveMinutes)
+  nonProductiveTotalEl.textContent = formatMinutesAsHM(nonProductiveMinutes)
+
   const firstDelay = minutesBetween(officialStart(), new Date(data[0].started_at))
-  summaryTextEl.textContent = `Sessions today: ${data.length} • Total recorded: ${totalMinutes} min • First start delay from 08:00: ${Math.max(0, firstDelay)} min.`
+  summaryTextEl.textContent = `Today: ${data.length} sessions • Productive ${productiveMinutes} min • Non-productive ${nonProductiveMinutes} min • First start delay from 08:00: ${Math.max(0, firstDelay)} min.`
   return data
 }
 async function closeCurrentIfAny(now = new Date()) {
@@ -499,7 +534,6 @@ async function closeCurrentIfAny(now = new Date()) {
 }
 async function clockNewOrContinue() {
   if(!validateClock()) return
-
   const now = new Date()
   if(!batchIdEl.value.trim()) batchIdEl.value = generateBatchId()
 
@@ -525,10 +559,10 @@ async function clockNewOrContinue() {
       `${employeeEl.value} • Order ${payload.order_no} • ${payload.work_type} • ${formatTimeSec(now)}`
     )
     updateOpenSessionPanel()
-    const justOrder = orderNoEl.value.trim()
+    const keepOrder = orderNoEl.value.trim()
     clearEntryFields()
     await loadTodaySessions()
-    orderNoEl.value = justOrder
+    orderNoEl.value = keepOrder
     await loadOrderWorkflow()
   }catch(error){
     alert(error.message)
@@ -560,6 +594,7 @@ window.addEventListener('load', async () => {
   }
 
   batchIdEl.value = generateBatchId()
+  renderFlow(null, 'Printing')
   updateOpenSessionPanel()
   await loadTodaySessions()
   await loadOrderWorkflow()
