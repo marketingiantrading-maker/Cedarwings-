@@ -1,53 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cedarwings SAS Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cedarwings SAS Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f5f7fb;
+    }
+    .box {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    select, input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    .status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Cedarwings SAS - Test System</h2>
+  <div class="box">
+    <h2>Cedarwings SAS - Time Session</h2>
 
-<button id="testInsertBtn">Test Insert</button>
+    <label for="employeeSelect">Employee</label>
+    <select id="employeeSelect">
+      <option value="">Select employee</option>
+      <option value="Maya">Maya</option>
+      <option value="Rami">Rami</option>
+      <option value="Nadine">Nadine</option>
+      <option value="Georges">Georges</option>
+    </select>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { SUPABASE_CONFIG } from './config.js'
+    <label for="workType">Work Type</label>
+    <input type="text" id="workType" placeholder="Example: 3D Printing" />
 
-const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+    <label for="machine">Machine</label>
+    <input type="text" id="machine" placeholder="Example: RP601" />
 
-console.log('✅ Supabase connected')
+    <label for="orderNo">Order Number</label>
+    <input type="text" id="orderNo" placeholder="Example: ORD-1001" />
 
-// TEST INSERT BUTTON
-document.getElementById('testInsertBtn').addEventListener('click', async () => {
+    <label for="batchId">Batch ID</label>
+    <input type="text" id="batchId" placeholder="Example: B-1001" />
 
-  const { data, error } = await supabase
-    .from('time_sessions')
-    .insert([
-      {
-        employee_name: 'Test User',
-        session_type: 'productive',
-        work_type: '3D Printing',
-        machine: 'RP601',
-        order_no: 'ORD-TEST',
-        batch_id: 'B-TEST',
-        task_description: 'Testing insert',
-        started_at: new Date().toISOString()
+    <label for="taskDescription">Task Description</label>
+    <textarea id="taskDescription" placeholder="Describe the task"></textarea>
+
+    <button id="startBtn">Start Work</button>
+    <button id="endBtn">End Work</button>
+
+    <div class="status" id="statusText">No active session</div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    import { SUPABASE_CONFIG } from './config.js'
+
+    const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+    console.log('✅ Supabase connected')
+
+    let activeSessionId = null
+
+    const employeeSelect = document.getElementById('employeeSelect')
+    const workType = document.getElementById('workType')
+    const machine = document.getElementById('machine')
+    const orderNo = document.getElementById('orderNo')
+    const batchId = document.getElementById('batchId')
+    const taskDescription = document.getElementById('taskDescription')
+    const startBtn = document.getElementById('startBtn')
+    const endBtn = document.getElementById('endBtn')
+    const statusText = document.getElementById('statusText')
+
+    startBtn.addEventListener('click', async () => {
+      if (!employeeSelect.value) {
+        alert('Please select employee')
+        return
       }
-    ])
 
-  if (error) {
-    alert('❌ Error: ' + error.message)
-    console.log(error)
-  } else {
-    alert('✅ Inserted successfully!')
-    console.log(data)
-  }
+      if (!workType.value || !machine.value || !orderNo.value || !batchId.value || !taskDescription.value) {
+        alert('Please fill all fields')
+        return
+      }
 
-})
+      const { data, error } = await supabase
+        .from('time_sessions')
+        .insert([
+          {
+            employee_name: employeeSelect.value,
+            session_type: 'productive',
+            work_type: workType.value,
+            machine: machine.value,
+            order_no: orderNo.value,
+            batch_id: batchId.value,
+            task_description: taskDescription.value,
+            started_at: new Date().toISOString()
+          }
+        ])
+        .select()
 
-</script>
+      if (error) {
+        alert('Start error: ' + error.message)
+        console.log(error)
+        return
+      }
 
+      activeSessionId = data[0].id
+      statusText.textContent = 'Active session started for ' + employeeSelect.value
+      alert('Session started successfully')
+      console.log(data)
+    })
+
+    endBtn.addEventListener('click', async () => {
+      if (!activeSessionId) {
+        alert('No active session to end')
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('time_sessions')
+        .update({
+          ended_at: new Date().toISOString()
+        })
+        .eq('id', activeSessionId)
+        .select()
+
+      if (error) {
+        alert('End error: ' + error.message)
+        console.log(error)
+        return
+      }
+
+      statusText.textContent = 'Session ended'
+      activeSessionId = null
+      alert('Session ended successfully')
+      console.log(data)
+    })
+  </script>
 </body>
 </html>
