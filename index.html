@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cedarwings SAS - Aligner Manufacturing Traceability Dashboard</title>
+  <title>Cedarwings SAS - Aligner Manufacturing Functional Dashboard</title>
   <style>
     :root {
-      --bg: #0f172a;
+      --bg: #0b1220;
       --panel: #111827;
-      --panel-2: #1f2937;
+      --panel2: #1f2937;
       --line: #334155;
       --text: #e5e7eb;
       --muted: #94a3b8;
@@ -17,305 +17,187 @@
       --red: #ef4444;
       --blue: #3b82f6;
       --purple: #a855f7;
-      --cyan: #06b6d4;
-      --white: #ffffff;
-      --shadow: 0 10px 30px rgba(0,0,0,0.25);
       --radius: 18px;
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #0b1220, #0f172a 35%, #0b1220);
+      background: linear-gradient(180deg, #09101d, #0f172a 40%, #09101d);
       color: var(--text);
     }
-
     .app {
       display: grid;
       grid-template-columns: 260px 1fr;
       min-height: 100vh;
     }
-
     .sidebar {
-      background: rgba(17, 24, 39, 0.96);
+      background: rgba(17,24,39,0.98);
       border-right: 1px solid var(--line);
-      padding: 22px 16px;
+      padding: 20px 14px;
       position: sticky;
       top: 0;
       height: 100vh;
     }
-
     .brand {
-      padding: 14px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(6,182,212,0.08));
-      border: 1px solid rgba(59,130,246,0.2);
-      margin-bottom: 18px;
-      box-shadow: var(--shadow);
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.22);
+      margin-bottom: 16px;
     }
-
-    .brand h1 {
-      font-size: 18px;
-      margin: 0 0 6px;
-    }
-
-    .brand p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .nav {
-      display: grid;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
+    .brand h1 { margin: 0; font-size: 18px; }
+    .brand p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .nav { display: grid; gap: 8px; }
     .nav button {
       width: 100%;
       text-align: left;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid transparent;
-      border-radius: 14px;
       padding: 12px 14px;
+      border-radius: 14px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text);
       cursor: pointer;
-      transition: 0.2s ease;
       font-size: 14px;
     }
-
-    .nav button:hover,
-    .nav button.active {
-      background: rgba(59,130,246,0.13);
-      border-color: rgba(59,130,246,0.22);
+    .nav button.active, .nav button:hover {
+      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.2);
     }
-
-    .main {
-      padding: 22px;
-    }
-
+    .main { padding: 22px; }
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
+      margin-bottom: 18px;
     }
-
-    .topbar h2 {
-      margin: 0;
-      font-size: 26px;
+    .topbar h2 { margin: 0; font-size: 26px; }
+    .topbar p { margin: 6px 0 0; color: var(--muted); }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
+    .card {
+      background: rgba(17,24,39,0.95);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
     }
-
-    .topbar p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 14px;
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
     }
-
-    .toolbar {
+    .kpi .label { color: var(--muted); font-size: 13px; }
+    .kpi .value { font-size: 28px; font-weight: bold; margin-top: 10px; }
+    .kpi .sub { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-employee { display: grid; grid-template-columns: 420px 1fr; gap: 16px; }
+    .section-title {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      justify-content: space-between;
       align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
     }
-
-    input, select, button.action {
-      background: var(--panel);
+    .section-title h3 { margin: 0; font-size: 18px; }
+    .muted { color: var(--muted); }
+    .hidden { display: none; }
+    input, select, textarea, button.action {
+      width: 100%;
+      background: #0f172a;
       color: var(--text);
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 10px 12px;
       font-size: 14px;
     }
-
+    textarea { min-height: 86px; resize: vertical; }
     button.action {
+      width: auto;
       cursor: pointer;
+      background: #13213b;
     }
-
-    .kpi-grid {
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .form-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(150px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-
-    .card {
-      background: rgba(17, 24, 39, 0.94);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .kpi .label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .kpi .value {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    .kpi .sub {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .layout-2 {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .layout-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .hidden { display: none; }
-
     .table-wrap {
       overflow: auto;
       border-radius: 14px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(148,163,184,0.16);
       margin-top: 12px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 860px;
-      background: rgba(17, 24, 39, 0.5);
+      min-width: 820px;
     }
-
     th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      padding: 11px 10px;
       text-align: left;
       font-size: 13px;
+      border-bottom: 1px solid rgba(148,163,184,0.13);
       vertical-align: top;
     }
-
     th {
+      background: rgba(255,255,255,0.03);
       color: #cbd5e1;
-      background: rgba(255,255,255,0.02);
       position: sticky;
       top: 0;
-      z-index: 1;
     }
-
     .badge {
       display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
+      padding: 5px 9px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: bold;
-      color: var(--white);
-      white-space: nowrap;
+      border: 1px solid transparent;
     }
-
-    .green { background: rgba(34,197,94,0.18); color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
-    .orange { background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid rgba(245,158,11,0.35); }
-    .red { background: rgba(239,68,68,0.18); color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); }
-    .blue { background: rgba(59,130,246,0.18); color: #93c5fd; border: 1px solid rgba(59,130,246,0.35); }
-    .purple { background: rgba(168,85,247,0.18); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.35); }
-
-    .small-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .mini-stat {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .mini-stat strong {
-      display: block;
-      font-size: 22px;
-      margin-top: 8px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .section-title h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .muted { color: var(--muted); }
-
-    .progress {
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(148,163,184,0.16);
-      overflow: hidden;
-      min-width: 90px;
-    }
-
-    .progress > span {
-      display: block;
-      height: 100%;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      border-radius: inherit;
-    }
-
-    .trace-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 16px;
-    }
-
-    .list {
-      display: grid;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
+    .green { color: #86efac; background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.3); }
+    .orange { color: #fcd34d; background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.3); }
+    .red { color: #fca5a5; background: rgba(239,68,68,0.14); border-color: rgba(239,68,68,0.3); }
+    .blue { color: #93c5fd; background: rgba(59,130,246,0.14); border-color: rgba(59,130,246,0.3); }
+    .purple { color: #d8b4fe; background: rgba(168,85,247,0.14); border-color: rgba(168,85,247,0.3); }
+    .list { display: grid; gap: 10px; }
     .list-item {
-      background: rgba(255,255,255,0.02);
       border: 1px solid rgba(148,163,184,0.15);
-      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
       padding: 12px;
+      border-radius: 14px;
     }
-
-    .footer-note {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 12px;
+    .timer {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 8px 0 2px;
     }
-
+    .notice {
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: none;
+    }
+    .notice.show { display: block; }
+    .notice.success { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+    .notice.error { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
     @media (max-width: 1200px) {
       .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-      .layout-2, .trace-grid { grid-template-columns: 1fr; }
-      .layout-3 { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .grid-employee { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 860px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: relative; height: auto; }
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .small-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -324,140 +206,244 @@
     <aside class="sidebar">
       <div class="brand">
         <h1>Cedarwings SAS Dashboard</h1>
-        <p>Fiche de traçabilité for Cedarwings SAS manufacturing, time sessions, inventory lots, and QC approvals.</p>
+        <p>Functional prototype for employee clocking, stock traceability, batch workflow, and production control.</p>
       </div>
-
       <div class="nav">
-        <button class="tab-btn active" data-tab="overview">Production Overview</button>
-        <button class="tab-btn" data-tab="time">Time Management</button>
-        <button class="tab-btn" data-tab="inventory">Inventory & Stock</button>
-        <button class="tab-btn" data-tab="traceability">Fiche de Traçabilité</button>
-        <button class="tab-btn" data-tab="qc">Quality Control</button>
-        <button class="tab-btn" data-tab="reports">Reports & Analytics</button>
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="employee">Employee Dashboard</button>
+        <button class="tab-btn" data-tab="inventory">Inventory Dashboard</button>
+        <button class="tab-btn" data-tab="traceability">Traceability</button>
+        <button class="tab-btn" data-tab="reports">Reports</button>
       </div>
     </aside>
 
     <main class="main">
       <div class="topbar">
         <div>
-          <h2 id="pageTitle">Production Overview</h2>
-          <p id="pageSubtitle">Live visibility of open cases, next steps, time performance, and stock alerts.</p>
+          <h2 id="pageTitle">Overview</h2>
+          <p id="pageSubtitle">Functional operations dashboard for Cedarwings SAS.</p>
         </div>
         <div class="toolbar">
-          <input id="searchInput" type="text" placeholder="Search case, order, lot, employee..." />
-          <select id="statusFilter">
-            <option value="all">All Status</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Waiting Approval">Waiting Approval</option>
-            <option value="Blocked">Blocked</option>
-            <option value="Pending">Pending</option>
-          </select>
-          <button class="action" id="resetBtn">Reset</button>
+          <input id="globalSearch" type="text" placeholder="Search order, batch, employee, lot..." />
         </div>
       </div>
 
-      <section class="kpi-grid" id="kpiGrid"></section>
+      <div id="messageBox" class="notice"></div>
+      <section class="kpi-grid" id="kpis"></section>
 
       <section id="overviewTab" class="tab-panel">
-        <div class="layout-2">
+        <div class="grid-2">
           <div class="card">
             <div class="section-title">
-              <h3>Open Cases</h3>
-              <span class="muted">Current step + next projection</span>
+              <h3>Open Production Cases</h3>
+              <span class="muted">Current + next actions</span>
             </div>
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Case / Batch</th>
+                    <th>Batch</th>
                     <th>Order</th>
                     <th>Current Step</th>
-                    <th>Assigned</th>
+                    <th>Employee</th>
                     <th>Machine</th>
                     <th>Status</th>
                     <th>Next</th>
-                    <th>Next 2 Steps</th>
-                    <th>Delay</th>
+                    <th>Next 2</th>
                   </tr>
                 </thead>
-                <tbody id="casesTable"></tbody>
+                <tbody id="overviewCases"></tbody>
               </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">
+              <h3>Alerts</h3>
+              <span class="muted">Stock, delay, overtime</span>
+            </div>
+            <div class="list" id="alertList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="employeeTab" class="tab-panel hidden">
+        <div class="grid-employee">
+          <div class="card">
+            <div class="section-title">
+              <h3>Clocking Panel</h3>
+              <span class="muted">Start / stop work sessions</span>
+            </div>
+
+            <div class="form-grid">
+              <div>
+                <label class="muted">Employee</label>
+                <select id="employeeName"></select>
+              </div>
+              <div>
+                <label class="muted">Session Type</label>
+                <select id="sessionType">
+                  <option value="Productive">Productive</option>
+                  <option value="Waste">Waste</option>
+                </select>
+              </div>
+              <div>
+                <label class="muted">Work Type / Category</label>
+                <select id="workType">
+                  <option value="3D Printing">3D Printing</option>
+                  <option value="Thermoforming">Thermoforming</option>
+                  <option value="Trimming">Trimming</option>
+                  <option value="Laser Marking">Laser Marking</option>
+                  <option value="Quality Control">Quality Control</option>
+                  <option value="Packaging">Packaging</option>
+                  <option value="Waste">Waste</option>
+                </select>
+              </div>
+              <div>
+                <label class="muted">Machine</label>
+                <select id="machine">
+                  <option value="RP601">RP601</option>
+                  <option value="RP602">RP602</option>
+                  <option value="TF-01">TF-01</option>
+                  <option value="TR-01">TR-01</option>
+                  <option value="QC Desk">QC Desk</option>
+                  <option value="Packing">Packing</option>
+                </select>
+              </div>
+              <div>
+                <label class="muted">Order Number</label>
+                <input id="orderNumber" placeholder="ORD-1052" />
+              </div>
+              <div>
+                <label class="muted">Batch ID</label>
+                <input id="batchId" placeholder="B-240605" />
+              </div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <label class="muted">Task / Operation Description</label>
+              <textarea id="taskDescription" placeholder="Describe the current operation..."></textarea>
+            </div>
+
+            <div id="wasteCategoryWrap" style="margin-top:12px; display:none;">
+              <label class="muted">Waste Category</label>
+              <select id="wasteCategory">
+                <option value="Waiting for instructions">Waiting for instructions</option>
+                <option value="Waiting for machine">Waiting for machine</option>
+                <option value="Waiting for material">Waiting for material</option>
+                <option value="Cleaning">Cleaning</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Internal movement">Internal movement</option>
+                <option value="Break">Break</option>
+                <option value="Idle / no task assigned">Idle / no task assigned</option>
+                <option value="Rework / correction">Rework / correction</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="timer" id="activeTimer">00:00:00</div>
+            <div class="muted" id="activeStatus">No active session</div>
+
+            <div class="actions-row" style="margin-top:14px;">
+              <button class="action" id="startSessionBtn">Start Work</button>
+              <button class="action" id="stopSessionBtn">End / Done</button>
+              <button class="action" id="startWasteBtn">Start Waste Time</button>
             </div>
           </div>
 
           <div class="card">
             <div class="section-title">
-              <h3>Production Snapshot</h3>
-              <span class="muted">Today</span>
+              <h3>Today Employee Sessions</h3>
+              <span class="muted">Live session log</span>
             </div>
-            <div class="small-grid" id="phaseWidgets"></div>
-            <div class="footer-note">The dashboard can later be connected to Supabase or another database for live updates.</div>
-          </div>
-        </div>
-
-        <div class="layout-3">
-          <div class="card">
-            <div class="section-title"><h3>Machine Utilization</h3><span class="muted">Live load</span></div>
-            <div id="machineUtilization" class="list"></div>
-          </div>
-          <div class="card">
-            <div class="section-title"><h3>Low Stock / Expiry</h3><span class="muted">Critical alerts</span></div>
-            <div id="stockAlerts" class="list"></div>
-          </div>
-          <div class="card">
-            <div class="section-title"><h3>Pending Approvals</h3><span class="muted">Lab review queue</span></div>
-            <div id="approvalList" class="list"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="timeTab" class="tab-panel hidden">
-        <div class="card">
-          <div class="section-title">
-            <h3>Employee Time Sessions</h3>
-            <span class="muted">Attendance, productive time, waste time, overtime</span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Employee</th>
-                  <th>First Task</th>
-                  <th>Delay From 08:00</th>
-                  <th>Productive</th>
-                  <th>Waste</th>
-                  <th>Overtime</th>
-                  <th>Current Machine</th>
-                  <th>Current Order</th>
-                  <th>Current Task</th>
-                </tr>
-              </thead>
-              <tbody id="timeTable"></tbody>
-            </table>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Type</th>
+                    <th>Order</th>
+                    <th>Batch</th>
+                    <th>Machine</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="sessionTable"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="inventoryTab" class="tab-panel hidden">
-        <div class="card">
+        <div class="grid-2">
+          <div class="card">
+            <div class="section-title">
+              <h3>Add / Update Stock Lot</h3>
+              <span class="muted">Traceable item entry</span>
+            </div>
+            <div class="form-grid">
+              <div><label class="muted">Item Name</label><input id="stockItem" placeholder="Dental Resin Clear" /></div>
+              <div><label class="muted">Lot Number</label><input id="stockLot" placeholder="LOT-R050" /></div>
+              <div><label class="muted">Quantity</label><input id="stockQty" type="number" placeholder="10" /></div>
+              <div><label class="muted">Unit Cost</label><input id="stockCost" type="number" step="0.01" placeholder="48" /></div>
+              <div><label class="muted">Purchase Date</label><input id="stockPurchase" type="date" /></div>
+              <div><label class="muted">Expiry Date</label><input id="stockExpiry" type="date" /></div>
+              <div><label class="muted">Supplier</label><input id="stockSupplier" placeholder="Supplier name" /></div>
+              <div><label class="muted">Location</label><input id="stockLocation" placeholder="Room A / Rack 1" /></div>
+              <div><label class="muted">QR Reference</label><input id="stockQr" placeholder="QR-R050" /></div>
+              <div><label class="muted">Status</label>
+                <select id="stockStatus">
+                  <option value="Available">Available</option>
+                  <option value="Low Stock">Low Stock</option>
+                  <option value="Near Expiry">Near Expiry</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions-row" style="margin-top:14px;">
+              <button class="action" id="addStockBtn">Save Stock Lot</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <h3>Consume Material</h3>
+              <span class="muted">Link stock to production batch</span>
+            </div>
+            <div class="form-grid">
+              <div><label class="muted">Batch ID</label><input id="consumeBatch" placeholder="B-240605" /></div>
+              <div><label class="muted">Order Number</label><input id="consumeOrder" placeholder="ORD-1052" /></div>
+              <div><label class="muted">Item / Lot</label><select id="consumeLot"></select></div>
+              <div><label class="muted">Quantity Used</label><input id="consumeQty" type="number" step="0.01" placeholder="1" /></div>
+              <div><label class="muted">Employee</label><select id="consumeEmployee"></select></div>
+              <div><label class="muted">Timestamp</label><input id="consumeDate" type="datetime-local" /></div>
+            </div>
+            <div class="actions-row" style="margin-top:14px;">
+              <button class="action" id="consumeBtn">Consume Material</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
           <div class="section-title">
-            <h3>Inventory Lots</h3>
-            <span class="muted">Lot traceability, FEFO/FIFO, stock value, QR-ready</span>
+            <h3>Inventory Stock Table</h3>
+            <span class="muted">Value, lot, expiry, location, QR</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Lot No.</th>
+                  <th>Lot</th>
                   <th>Qty</th>
                   <th>Unit Cost</th>
-                  <th>Stock Value</th>
-                  <th>Purchase Date</th>
+                  <th>Value</th>
+                  <th>Purchase</th>
                   <th>Expiry</th>
+                  <th>Supplier</th>
                   <th>Location</th>
                   <th>Status</th>
-                  <th>QR</th>
                 </tr>
               </thead>
               <tbody id="inventoryTable"></tbody>
@@ -467,402 +453,420 @@
       </section>
 
       <section id="traceabilityTab" class="tab-panel hidden">
-        <div class="trace-grid">
+        <div class="grid-2">
           <div class="card">
             <div class="section-title">
-              <h3>Batch Traceability Record</h3>
-              <span class="muted">Select a case to view full manufacturing history</span>
+              <h3>Batch Overview</h3>
+              <span class="muted">One fiche de traçabilité per batch</span>
             </div>
-            <select id="batchSelect"></select>
-            <div id="traceabilityDetails" class="list" style="margin-top:14px"></div>
+            <select id="traceBatchSelect"></select>
+            <div class="list" id="traceInfo" style="margin-top:12px;"></div>
           </div>
           <div class="card">
             <div class="section-title">
-              <h3>Consumed Materials</h3>
-              <span class="muted">Linked to selected batch</span>
+              <h3>Materials Linked to Batch</h3>
+              <span class="muted">Reverse traceability</span>
             </div>
-            <div id="materialTraceList" class="list"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="qcTab" class="tab-panel hidden">
-        <div class="layout-2">
-          <div class="card">
-            <div class="section-title"><h3>QC Approval Queue</h3><span class="muted">Pending lab decisions</span></div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Batch</th>
-                    <th>Step</th>
-                    <th>Submitted By</th>
-                    <th>Reviewer</th>
-                    <th>Waiting Since</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="qcQueueTable"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="card">
-            <div class="section-title"><h3>QC Notes</h3><span class="muted">Recent decisions</span></div>
-            <div id="qcNotes" class="list"></div>
+            <div class="list" id="traceMaterials"></div>
           </div>
         </div>
       </section>
 
       <section id="reportsTab" class="tab-panel hidden">
-        <div class="layout-3">
+        <div class="grid-3">
           <div class="card">
-            <div class="section-title"><h3>Time Analytics</h3><span class="muted">Efficiency indicators</span></div>
-            <div id="timeAnalytics" class="list"></div>
+            <div class="section-title"><h3>Employee Summary</h3><span class="muted">Today</span></div>
+            <div id="employeeReport" class="list"></div>
           </div>
           <div class="card">
-            <div class="section-title"><h3>Stock Analytics</h3><span class="muted">Valuation & expiry</span></div>
-            <div id="stockAnalytics" class="list"></div>
+            <div class="section-title"><h3>Inventory Summary</h3><span class="muted">Valuation</span></div>
+            <div id="inventoryReport" class="list"></div>
           </div>
           <div class="card">
-            <div class="section-title"><h3>Production Analytics</h3><span class="muted">Turnaround & bottlenecks</span></div>
-            <div id="productionAnalytics" class="list"></div>
+            <div class="section-title"><h3>Traceability Summary</h3><span class="muted">Batch linkage</span></div>
+            <div id="traceReport" class="list"></div>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script>
-    const state = {
-      cases: [
-        {
-          batchId: 'B-240601', orderNo: 'ORD-1048', patient: 'Case A', currentStep: '3D Printing', employee: 'Maya', machine: 'RP601',
-          status: 'In Progress', next: 'Thermoforming', next2: ['Trimming', 'Laser Marking'], delay: 'On Track', phase: 'Production', priority: 'High',
-          qc: 'Pending', materials: ['Dental Resin Clear - LOT-R041', 'Thermo Sheet 0.75 - LOT-T105'], timeline: ['Intake completed', 'Printing started 08:20', 'Printing approval pending'],
-          labor: '145 min', approval: 'Waiting QC'
-        },
-        {
-          batchId: 'B-240602', orderNo: 'ORD-1049', patient: 'Case B', currentStep: 'Thermoforming', employee: 'Rami', machine: 'TF-01',
-          status: 'Waiting Approval', next: 'Trimming', next2: ['Laser Marking', 'QC Final'], delay: 'Delay Risk', phase: 'Production', priority: 'Medium',
-          qc: 'Waiting Approval', materials: ['Thermo Sheet 1.0 - LOT-T110'], timeline: ['Printing completed', 'Thermoforming done', 'Approval requested 11:05'],
-          labor: '182 min', approval: 'Lab Review'
-        },
-        {
-          batchId: 'B-240603', orderNo: 'ORD-1050', patient: 'Case C', currentStep: 'Quality Control', employee: 'Nadine', machine: 'QC Desk',
-          status: 'Pending', next: 'Finalization', next2: ['Packaging', 'Dispatch'], delay: 'On Track', phase: 'Quality Control', priority: 'Low',
-          qc: 'Under Review', materials: ['Pouch Label - LOT-L021'], timeline: ['Thermoforming completed', 'Trim completed', 'QC checklist opened'],
-          labor: '96 min', approval: 'Under QC'
-        },
-        {
-          batchId: 'B-240604', orderNo: 'ORD-1051', patient: 'Case D', currentStep: 'Printing Preparation', employee: 'Georges', machine: 'RP602',
-          status: 'Blocked', next: '3D Printing', next2: ['Thermoforming', 'Trimming'], delay: 'Blocked', phase: 'Intake', priority: 'High',
-          qc: 'N/A', materials: ['Dental Resin Clear - LOT-R039'], timeline: ['STL issue detected', 'Waiting corrected file'],
-          labor: '35 min', approval: 'Blocked'
-        }
+  <script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+  import { SUPABASE_CONFIG } from './config.js'
+
+  const supabase = createClient(
+    SUPABASE_CONFIG.url,
+    SUPABASE_CONFIG.anonKey
+  )
+
+  console.log('✅ Supabase connected')
+
+  // existing script continues below
+
+    const STORAGE_KEY = 'cedarwings_functional_dashboard_v1';
+    const defaultData = {
+      employees: ['Maya', 'Rami', 'Nadine', 'Georges'],
+      sessions: [
+        { id: 1, employee: 'Maya', type: 'Productive', workType: '3D Printing', machine: 'RP601', orderNo: 'ORD-1048', batchId: 'B-240601', description: 'Printing upper aligners', wasteCategory: '', start: isoToday('08:20'), end: isoToday('10:40') },
+        { id: 2, employee: 'Rami', type: 'Productive', workType: 'Thermoforming', machine: 'TF-01', orderNo: 'ORD-1049', batchId: 'B-240602', description: 'Thermoforming lower arch', wasteCategory: '', start: isoToday('08:05'), end: isoToday('11:05') },
+        { id: 3, employee: 'Georges', type: 'Waste', workType: 'Waste', machine: 'RP602', orderNo: '', batchId: '', description: 'Waiting corrected STL', wasteCategory: 'Waiting for instructions', start: isoToday('08:00'), end: isoToday('08:35') }
       ],
-      time: [
-        { employee: 'Maya', firstTask: '08:20', delay: '20 min', productive: '05:10', waste: '00:35', overtime: '00:25', machine: 'RP601', order: 'ORD-1048', task: '3D Printing' },
-        { employee: 'Rami', firstTask: '08:05', delay: '05 min', productive: '06:05', waste: '00:20', overtime: '00:00', machine: 'TF-01', order: 'ORD-1049', task: 'Thermoforming' },
-        { employee: 'Nadine', firstTask: '08:00', delay: '00 min', productive: '04:50', waste: '00:40', overtime: '00:00', machine: 'QC Desk', order: 'ORD-1050', task: 'QC Review' },
-        { employee: 'Georges', firstTask: '08:35', delay: '35 min', productive: '03:40', waste: '01:10', overtime: '00:00', machine: 'RP602', order: 'ORD-1051', task: 'Print Preparation' }
-      ],
+      activeSession: null,
       inventory: [
-        { item: 'Dental Resin Clear', lot: 'LOT-R041', qty: 12, unitCost: 48, purchaseDate: '2026-03-22', expiry: '2026-06-22', location: 'Room A / Rack 1', status: 'Available', qr: 'QR-R041' },
-        { item: 'Dental Resin Clear', lot: 'LOT-R039', qty: 3, unitCost: 48, purchaseDate: '2026-02-10', expiry: '2026-04-18', location: 'Room A / Rack 1', status: 'Near Expiry', qr: 'QR-R039' },
-        { item: 'Thermo Sheet 0.75', lot: 'LOT-T105', qty: 60, unitCost: 3.5, purchaseDate: '2026-03-28', expiry: '2027-03-28', location: 'Room B / Shelf 2', status: 'Available', qr: 'QR-T105' },
-        { item: 'Thermo Sheet 1.0', lot: 'LOT-T110', qty: 14, unitCost: 4.2, purchaseDate: '2026-03-14', expiry: '2026-07-14', location: 'Room B / Shelf 3', status: 'Low Stock', qr: 'QR-T110' },
-        { item: 'Pouch Label', lot: 'LOT-L021', qty: 240, unitCost: 0.22, purchaseDate: '2026-04-01', expiry: '2027-04-01', location: 'Packing / Bin 4', status: 'Available', qr: 'QR-L021' }
+        { id: 1, item: 'Dental Resin Clear', lot: 'LOT-R041', qty: 12, unitCost: 48, purchaseDate: todayDate(), expiryDate: futureDate(70), supplier: 'Resin Supplier', location: 'Room A / Rack 1', qr: 'QR-R041', status: 'Available' },
+        { id: 2, item: 'Thermo Sheet 1.0', lot: 'LOT-T110', qty: 14, unitCost: 4.2, purchaseDate: todayDate(), expiryDate: futureDate(95), supplier: 'Thermo Supplier', location: 'Room B / Shelf 2', qr: 'QR-T110', status: 'Low Stock' },
+        { id: 3, item: 'Dental Resin Clear', lot: 'LOT-R039', qty: 3, unitCost: 48, purchaseDate: todayDate(), expiryDate: futureDate(5), supplier: 'Resin Supplier', location: 'Room A / Rack 1', qr: 'QR-R039', status: 'Near Expiry' }
       ],
-      qc: [
-        { batch: 'B-240602', step: 'Thermoforming Approval', submittedBy: 'Rami', reviewer: 'Lab Admin', waitingSince: '11:05', status: 'Waiting Approval' },
-        { batch: 'B-240601', step: 'Print Accuracy Check', submittedBy: 'Maya', reviewer: 'Nadine', waitingSince: '10:40', status: 'Pending Review' },
-        { batch: 'B-240603', step: 'Final QC', submittedBy: 'Nadine', reviewer: 'Admin', waitingSince: '09:55', status: 'In Review' }
+      consumption: [
+        { id: 1, batchId: 'B-240601', orderNo: 'ORD-1048', lot: 'LOT-R041', item: 'Dental Resin Clear', qty: 1.2, employee: 'Maya', timestamp: new Date().toISOString() },
+        { id: 2, batchId: 'B-240602', orderNo: 'ORD-1049', lot: 'LOT-T110', item: 'Thermo Sheet 1.0', qty: 1, employee: 'Rami', timestamp: new Date().toISOString() }
+      ],
+      cases: [
+        { batchId: 'B-240601', orderNo: 'ORD-1048', currentStep: '3D Printing', employee: 'Maya', machine: 'RP601', status: 'In Progress', next: 'Thermoforming', next2: ['Trimming', 'Laser Marking'] },
+        { batchId: 'B-240602', orderNo: 'ORD-1049', currentStep: 'Thermoforming', employee: 'Rami', machine: 'TF-01', status: 'Waiting Approval', next: 'Trimming', next2: ['Laser Marking', 'QC Final'] },
+        { batchId: 'B-240603', orderNo: 'ORD-1050', currentStep: 'Quality Control', employee: 'Nadine', machine: 'QC Desk', status: 'Pending', next: 'Finalization', next2: ['Packaging', 'Dispatch'] },
+        { batchId: 'B-240604', orderNo: 'ORD-1051', currentStep: 'Printing Preparation', employee: 'Georges', machine: 'RP602', status: 'Blocked', next: '3D Printing', next2: ['Thermoforming', 'Trimming'] }
       ]
     };
 
+    let data = loadData();
+    let timerInterval = null;
+
     const els = {
-      kpiGrid: document.getElementById('kpiGrid'),
-      casesTable: document.getElementById('casesTable'),
-      timeTable: document.getElementById('timeTable'),
+      kpis: document.getElementById('kpis'),
+      overviewCases: document.getElementById('overviewCases'),
+      alertList: document.getElementById('alertList'),
+      employeeName: document.getElementById('employeeName'),
+      sessionType: document.getElementById('sessionType'),
+      workType: document.getElementById('workType'),
+      machine: document.getElementById('machine'),
+      orderNumber: document.getElementById('orderNumber'),
+      batchId: document.getElementById('batchId'),
+      taskDescription: document.getElementById('taskDescription'),
+      wasteCategoryWrap: document.getElementById('wasteCategoryWrap'),
+      wasteCategory: document.getElementById('wasteCategory'),
+      activeTimer: document.getElementById('activeTimer'),
+      activeStatus: document.getElementById('activeStatus'),
+      sessionTable: document.getElementById('sessionTable'),
+      startSessionBtn: document.getElementById('startSessionBtn'),
+      stopSessionBtn: document.getElementById('stopSessionBtn'),
+      startWasteBtn: document.getElementById('startWasteBtn'),
+      stockItem: document.getElementById('stockItem'),
+      stockLot: document.getElementById('stockLot'),
+      stockQty: document.getElementById('stockQty'),
+      stockCost: document.getElementById('stockCost'),
+      stockPurchase: document.getElementById('stockPurchase'),
+      stockExpiry: document.getElementById('stockExpiry'),
+      stockSupplier: document.getElementById('stockSupplier'),
+      stockLocation: document.getElementById('stockLocation'),
+      stockQr: document.getElementById('stockQr'),
+      stockStatus: document.getElementById('stockStatus'),
+      addStockBtn: document.getElementById('addStockBtn'),
+      consumeBatch: document.getElementById('consumeBatch'),
+      consumeOrder: document.getElementById('consumeOrder'),
+      consumeLot: document.getElementById('consumeLot'),
+      consumeQty: document.getElementById('consumeQty'),
+      consumeEmployee: document.getElementById('consumeEmployee'),
+      consumeDate: document.getElementById('consumeDate'),
+      consumeBtn: document.getElementById('consumeBtn'),
       inventoryTable: document.getElementById('inventoryTable'),
-      phaseWidgets: document.getElementById('phaseWidgets'),
-      machineUtilization: document.getElementById('machineUtilization'),
-      stockAlerts: document.getElementById('stockAlerts'),
-      approvalList: document.getElementById('approvalList'),
-      batchSelect: document.getElementById('batchSelect'),
-      traceabilityDetails: document.getElementById('traceabilityDetails'),
-      materialTraceList: document.getElementById('materialTraceList'),
-      qcQueueTable: document.getElementById('qcQueueTable'),
-      qcNotes: document.getElementById('qcNotes'),
-      timeAnalytics: document.getElementById('timeAnalytics'),
-      stockAnalytics: document.getElementById('stockAnalytics'),
-      productionAnalytics: document.getElementById('productionAnalytics'),
-      searchInput: document.getElementById('searchInput'),
-      statusFilter: document.getElementById('statusFilter'),
-      resetBtn: document.getElementById('resetBtn'),
+      traceBatchSelect: document.getElementById('traceBatchSelect'),
+      traceInfo: document.getElementById('traceInfo'),
+      traceMaterials: document.getElementById('traceMaterials'),
+      employeeReport: document.getElementById('employeeReport'),
+      inventoryReport: document.getElementById('inventoryReport'),
+      traceReport: document.getElementById('traceReport'),
+      messageBox: document.getElementById('messageBox'),
+      globalSearch: document.getElementById('globalSearch'),
       pageTitle: document.getElementById('pageTitle'),
       pageSubtitle: document.getElementById('pageSubtitle')
     };
 
-    const tabMeta = {
-      overview: ['Production Overview', 'Live visibility of open cases, next steps, time performance, and stock alerts.'],
-      time: ['Time Management', 'Attendance starts at 08:00, delays become waste time, overtime starts after 17:00.'],
-      inventory: ['Inventory & Stock', 'Lot-based traceability with cost, expiry, shelf life, location, and QR reference.'],
-      traceability: ['Fiche de Traçabilité', 'Full batch genealogy linking labor, machine, stock lots, and approvals.'],
-      qc: ['Quality Control', 'Pending approvals, review decisions, rejection reasons, and correction loop.'],
-      reports: ['Reports & Analytics', 'Operational KPIs for time, stock valuation, bottlenecks, and traceability.']
-    };
-
-    function statusBadge(text) {
-      const map = {
-        'In Progress': 'green',
-        'Waiting Approval': 'blue',
-        'Pending': 'orange',
-        'Blocked': 'red',
-        'On Track': 'green',
-        'Delay Risk': 'orange',
-        'Available': 'green',
-        'Low Stock': 'orange',
-        'Near Expiry': 'purple',
-        'Critical': 'red',
-        'Pending Review': 'orange',
-        'In Review': 'blue'
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : structuredClone(defaultData);
+    }
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    function isoToday(time) {
+      const d = new Date();
+      const [h,m] = time.split(':');
+      d.setHours(Number(h), Number(m), 0, 0);
+      return d.toISOString();
+    }
+    function todayDate() {
+      return new Date().toISOString().slice(0,10);
+    }
+    function futureDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0,10);
+    }
+    function formatDateTime(iso) {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      return d.toLocaleString();
+    }
+    function formatShort(iso) {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    function diffText(start, end) {
+      const ms = new Date(end).getTime() - new Date(start).getTime();
+      const sec = Math.max(0, Math.floor(ms / 1000));
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+    function badge(text) {
+      const clsMap = {
+        'In Progress': 'green', 'Waiting Approval': 'blue', 'Pending': 'orange', 'Blocked': 'red',
+        'Productive': 'green', 'Waste': 'orange', 'Available': 'green', 'Low Stock': 'orange', 'Near Expiry': 'purple'
       };
-      const cls = map[text] || 'blue';
+      const cls = clsMap[text] || 'blue';
       return `<span class="badge ${cls}">${text}</span>`;
     }
-
-    function renderKPIs(filteredCases = state.cases, filteredInventory = state.inventory) {
-      const openCases = filteredCases.length;
-      const delayRisk = filteredCases.filter(c => c.delay === 'Delay Risk').length;
-      const blocked = filteredCases.filter(c => c.status === 'Blocked').length;
-      const productiveHours = 19.75;
-      const wasteHours = 2.75;
-      const lowStock = filteredInventory.filter(i => i.status === 'Low Stock').length;
-      const nearExpiry = filteredInventory.filter(i => i.status === 'Near Expiry').length;
-
-      const cards = [
-        ['Open Cases', openCases, 'Active production batches'],
-        ['Delay Risk', delayRisk, 'Cases needing attention'],
-        ['Blocked', blocked, 'Workflow interruptions'],
-        ['Productive Hours', productiveHours.toFixed(2), 'Today'],
-        ['Low Stock', lowStock, 'Items below threshold'],
-        ['Near Expiry', nearExpiry, 'Lots requiring FEFO action']
-      ];
-
-      els.kpiGrid.innerHTML = cards.map(([label, value, sub]) => `
-        <div class="card kpi">
-          <div class="label">${label}</div>
-          <div class="value">${value}</div>
-          <div class="sub">${sub}</div>
-        </div>
-      `).join('');
+    function showMessage(text, type='success') {
+      els.messageBox.className = `notice show ${type}`;
+      els.messageBox.textContent = text;
+      setTimeout(() => { els.messageBox.className = 'notice'; }, 2500);
     }
-
     function getFilteredCases() {
-      const term = els.searchInput.value.trim().toLowerCase();
-      const status = els.statusFilter.value;
-
-      return state.cases.filter(c => {
-        const hay = `${c.batchId} ${c.orderNo} ${c.employee} ${c.machine} ${c.currentStep} ${c.next} ${c.next2.join(' ')}`.toLowerCase();
-        const matchTerm = !term || hay.includes(term);
-        const matchStatus = status === 'all' || c.status === status;
-        return matchTerm && matchStatus;
+      const q = els.globalSearch.value.trim().toLowerCase();
+      return data.cases.filter(c => {
+        const hay = `${c.batchId} ${c.orderNo} ${c.currentStep} ${c.employee} ${c.machine} ${c.status}`.toLowerCase();
+        return !q || hay.includes(q);
       });
     }
-
     function getFilteredInventory() {
-      const term = els.searchInput.value.trim().toLowerCase();
-      return state.inventory.filter(i => {
-        const hay = `${i.item} ${i.lot} ${i.location} ${i.qr}`.toLowerCase();
-        return !term || hay.includes(term);
+      const q = els.globalSearch.value.trim().toLowerCase();
+      return data.inventory.filter(i => {
+        const hay = `${i.item} ${i.lot} ${i.location} ${i.supplier}`.toLowerCase();
+        return !q || hay.includes(q);
       });
     }
-
-    function renderCases() {
-      const cases = getFilteredCases();
-      els.casesTable.innerHTML = cases.map(c => `
+    function populateEmployeeSelectors() {
+      const options = data.employees.map(n => `<option value="${n}">${n}</option>`).join('');
+      els.employeeName.innerHTML = options;
+      els.consumeEmployee.innerHTML = options;
+    }
+    function populateLotSelector() {
+      els.consumeLot.innerHTML = data.inventory.map(i => `<option value="${i.id}">${i.item} - ${i.lot} (${i.qty})</option>`).join('');
+    }
+    function populateTraceBatch() {
+      const batchIds = [...new Set([...data.cases.map(c => c.batchId), ...data.consumption.map(c => c.batchId).filter(Boolean)])];
+      els.traceBatchSelect.innerHTML = batchIds.map(id => `<option value="${id}">${id}</option>`).join('');
+    }
+    function renderKPIs() {
+      const sessionsToday = data.sessions.length + (data.activeSession ? 1 : 0);
+      const openCases = data.cases.length;
+      const lowStock = data.inventory.filter(i => i.status === 'Low Stock').length;
+      const nearExpiry = data.inventory.filter(i => i.status === 'Near Expiry').length;
+      const stockValue = data.inventory.reduce((s,i) => s + Number(i.qty) * Number(i.unitCost), 0).toFixed(2);
+      const active = data.activeSession ? 1 : 0;
+      const cards = [
+        ['Open Cases', openCases, 'Production batches'],
+        ['Sessions Today', sessionsToday, 'Closed + active'],
+        ['Active Session', active, 'Live clocking'],
+        ['Low Stock', lowStock, 'Needs reorder'],
+        ['Near Expiry', nearExpiry, 'FEFO priority'],
+        ['Stock Value', stockValue, 'Total inventory value']
+      ];
+      els.kpis.innerHTML = cards.map(c => `<div class="card kpi"><div class="label">${c[0]}</div><div class="value">${c[1]}</div><div class="sub">${c[2]}</div></div>`).join('');
+    }
+    function renderOverview() {
+      els.overviewCases.innerHTML = getFilteredCases().map(c => `
         <tr>
-          <td><strong>${c.batchId}</strong><br><span class="muted">${c.patient}</span></td>
+          <td>${c.batchId}</td>
           <td>${c.orderNo}</td>
           <td>${c.currentStep}</td>
           <td>${c.employee}</td>
           <td>${c.machine}</td>
-          <td>${statusBadge(c.status)}</td>
+          <td>${badge(c.status)}</td>
           <td>${c.next}</td>
           <td>${c.next2.join(' → ')}</td>
-          <td>${statusBadge(c.delay)}</td>
         </tr>
       `).join('');
-
-      const byPhase = {
-        Intake: cases.filter(c => c.phase === 'Intake').length,
-        Production: cases.filter(c => c.phase === 'Production').length,
-        'Quality Control': cases.filter(c => c.phase === 'Quality Control').length,
-        Finalization: cases.filter(c => c.phase === 'Finalization').length
-      };
-
-      els.phaseWidgets.innerHTML = Object.entries(byPhase).map(([k,v]) => `
-        <div class="mini-stat">
-          <div class="muted">${k}</div>
-          <strong>${v}</strong>
-        </div>
-      `).join('');
+      const alerts = [];
+      if (data.activeSession) alerts.push(`Active session running for ${data.activeSession.employee}.`);
+      data.inventory.filter(i => i.status === 'Low Stock').forEach(i => alerts.push(`${i.item} ${i.lot} is low stock.`));
+      data.inventory.filter(i => i.status === 'Near Expiry').forEach(i => alerts.push(`${i.item} ${i.lot} is near expiry.`));
+      data.cases.filter(c => c.status === 'Blocked').forEach(c => alerts.push(`Case ${c.batchId} is blocked.`));
+      els.alertList.innerHTML = alerts.length ? alerts.map(a => `<div class="list-item">${a}</div>`).join('') : '<div class="list-item">No alerts.</div>';
     }
-
-    function renderTime() {
-      els.timeTable.innerHTML = state.time.map(t => `
+    function renderSessions() {
+      const rows = [...data.sessions];
+      if (data.activeSession) rows.unshift({ ...data.activeSession, end: null });
+      els.sessionTable.innerHTML = rows.sort((a,b) => new Date(b.start) - new Date(a.start)).map(s => `
         <tr>
-          <td>${t.employee}</td>
-          <td>${t.firstTask}</td>
-          <td>${t.delay}</td>
-          <td>${t.productive}</td>
-          <td>${t.waste}</td>
-          <td>${t.overtime}</td>
-          <td>${t.machine}</td>
-          <td>${t.order}</td>
-          <td>${t.task}</td>
+          <td>${s.employee}</td>
+          <td>${badge(s.type)}</td>
+          <td>${s.orderNo || '-'}</td>
+          <td>${s.batchId || '-'}</td>
+          <td>${s.machine || '-'}</td>
+          <td>${formatShort(s.start)}</td>
+          <td>${s.end ? formatShort(s.end) : 'Active'}</td>
+          <td>${s.end ? diffText(s.start, s.end) : diffText(s.start, new Date().toISOString())}</td>
         </tr>
       `).join('');
+      updateTimerUI();
     }
-
     function renderInventory() {
-      const inventory = getFilteredInventory();
-      els.inventoryTable.innerHTML = inventory.map(i => {
-        const value = (i.qty * i.unitCost).toFixed(2);
-        return `
-          <tr>
-            <td>${i.item}</td>
-            <td>${i.lot}</td>
-            <td>${i.qty}</td>
-            <td>${i.unitCost.toFixed(2)}</td>
-            <td>${value}</td>
-            <td>${i.purchaseDate}</td>
-            <td>${i.expiry}</td>
-            <td>${i.location}</td>
-            <td>${statusBadge(i.status)}</td>
-            <td>${i.qr}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function renderMachineUtilization() {
-      const machines = [
-        ['RP601', 82],
-        ['RP602', 61],
-        ['TF-01', 73],
-        ['QC Desk', 54]
-      ];
-
-      els.machineUtilization.innerHTML = machines.map(([name, pct]) => `
-        <div class="list-item">
-          <div class="section-title"><strong>${name}</strong><span class="muted">${pct}% load</span></div>
-          <div class="progress"><span style="width:${pct}%"></span></div>
-        </div>
-      `).join('');
-    }
-
-    function renderStockAlerts() {
-      const items = state.inventory.filter(i => ['Low Stock', 'Near Expiry'].includes(i.status));
-      els.stockAlerts.innerHTML = items.map(i => `
-        <div class="list-item">
-          <strong>${i.item}</strong><br>
-          <span class="muted">${i.lot} • ${i.location}</span><br><br>
-          ${statusBadge(i.status)}
-        </div>
-      `).join('');
-    }
-
-    function renderApprovalList() {
-      els.approvalList.innerHTML = state.qc.map(q => `
-        <div class="list-item">
-          <strong>${q.batch}</strong><br>
-          <span class="muted">${q.step}</span><br><br>
-          ${statusBadge(q.status)}
-        </div>
-      `).join('');
-    }
-
-    function renderTraceability() {
-      els.batchSelect.innerHTML = state.cases.map(c => `<option value="${c.batchId}">${c.batchId} - ${c.orderNo}</option>`).join('');
-      updateTraceabilityView();
-    }
-
-    function updateTraceabilityView() {
-      const selected = state.cases.find(c => c.batchId === els.batchSelect.value) || state.cases[0];
-      if (!selected) return;
-
-      els.traceabilityDetails.innerHTML = `
-        <div class="list-item"><strong>Case / Batch</strong><br><span class="muted">${selected.batchId} • ${selected.orderNo}</span></div>
-        <div class="list-item"><strong>Current Workflow</strong><br><span class="muted">Current: ${selected.currentStep}<br>Next: ${selected.next}<br>Next 2: ${selected.next2.join(' → ')}</span></div>
-        <div class="list-item"><strong>Labor & Machine</strong><br><span class="muted">Assigned: ${selected.employee}<br>Machine: ${selected.machine}<br>Linked labor: ${selected.labor}</span></div>
-        <div class="list-item"><strong>Approval Status</strong><br><span class="muted">${selected.approval}</span></div>
-        <div class="list-item"><strong>Timeline</strong><br><span class="muted">${selected.timeline.join('<br>')}</span></div>
-      `;
-
-      els.materialTraceList.innerHTML = selected.materials.map(m => `
-        <div class="list-item">
-          <strong>${m.split(' - ')[0]}</strong><br>
-          <span class="muted">${m.split(' - ')[1] || ''}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderQC() {
-      els.qcQueueTable.innerHTML = state.qc.map(q => `
+      els.inventoryTable.innerHTML = getFilteredInventory().map(i => `
         <tr>
-          <td>${q.batch}</td>
-          <td>${q.step}</td>
-          <td>${q.submittedBy}</td>
-          <td>${q.reviewer}</td>
-          <td>${q.waitingSince}</td>
-          <td>${statusBadge(q.status)}</td>
+          <td>${i.item}</td>
+          <td>${i.lot}</td>
+          <td>${i.qty}</td>
+          <td>${Number(i.unitCost).toFixed(2)}</td>
+          <td>${(Number(i.qty) * Number(i.unitCost)).toFixed(2)}</td>
+          <td>${i.purchaseDate}</td>
+          <td>${i.expiryDate}</td>
+          <td>${i.supplier}</td>
+          <td>${i.location}</td>
+          <td>${badge(i.status)}</td>
         </tr>
       `).join('');
-
-      els.qcNotes.innerHTML = [
-        'B-240598 rework approved after trimming correction.',
-        'B-240601 print accuracy check pending Nadine review.',
-        'B-240602 waiting thermoforming approval from lab admin.'
-      ].map(note => `<div class="list-item">${note}</div>`).join('');
     }
-
+    function renderTraceability() {
+      populateTraceBatch();
+      const id = els.traceBatchSelect.value || (data.cases[0] && data.cases[0].batchId);
+      const caseInfo = data.cases.find(c => c.batchId === id);
+      const sessions = [...data.sessions, ...(data.activeSession ? [data.activeSession] : [])].filter(s => s.batchId === id);
+      const materials = data.consumption.filter(c => c.batchId === id);
+      els.traceInfo.innerHTML = `
+        <div class="list-item"><strong>Batch</strong><br><span class="muted">${id || '-'}</span></div>
+        <div class="list-item"><strong>Order</strong><br><span class="muted">${caseInfo ? caseInfo.orderNo : '-'}</span></div>
+        <div class="list-item"><strong>Current Step</strong><br><span class="muted">${caseInfo ? caseInfo.currentStep : '-'}</span></div>
+        <div class="list-item"><strong>Assigned Employee</strong><br><span class="muted">${caseInfo ? caseInfo.employee : '-'}</span></div>
+        <div class="list-item"><strong>Machine</strong><br><span class="muted">${caseInfo ? caseInfo.machine : '-'}</span></div>
+        <div class="list-item"><strong>Linked Labor Sessions</strong><br><span class="muted">${sessions.length}</span></div>
+      `;
+      els.traceMaterials.innerHTML = materials.length ? materials.map(m => `
+        <div class="list-item">
+          <strong>${m.item}</strong><br>
+          <span class="muted">Lot: ${m.lot}<br>Qty used: ${m.qty}<br>Employee: ${m.employee}<br>Time: ${formatDateTime(m.timestamp)}</span>
+        </div>
+      `).join('') : '<div class="list-item">No materials linked to this batch yet.</div>';
+    }
     function renderReports() {
-      els.timeAnalytics.innerHTML = [
-        ['Average first-task delay', '15 min'],
-        ['Waste ratio', '12.2%'],
-        ['Overtime today', '00:25'],
-        ['Top waste reason', 'Waiting for material']
-      ].map(([k,v]) => `<div class="list-item"><strong>${k}</strong><br><span class="muted">${v}</span></div>`).join('');
-
-      const totalValue = state.inventory.reduce((sum, i) => sum + (i.qty * i.unitCost), 0).toFixed(2);
-      els.stockAnalytics.innerHTML = [
-        ['Total stock value', totalValue],
-        ['Near-expiry lots', String(state.inventory.filter(i => i.status === 'Near Expiry').length)],
-        ['Low-stock items', String(state.inventory.filter(i => i.status === 'Low Stock').length)],
-        ['FEFO candidates', 'LOT-R039']
-      ].map(([k,v]) => `<div class="list-item"><strong>${k}</strong><br><span class="muted">${v}</span></div>`).join('');
-
-      els.productionAnalytics.innerHTML = [
-        ['Cases in production', String(state.cases.length)],
-        ['Bottleneck step', 'Thermoforming Approval'],
-        ['Blocked cases', String(state.cases.filter(c => c.status === 'Blocked').length)],
-        ['Average turnaround', '1.8 days']
-      ].map(([k,v]) => `<div class="list-item"><strong>${k}</strong><br><span class="muted">${v}</span></div>`).join('');
+      const totals = {};
+      data.sessions.forEach(s => {
+        if (!totals[s.employee]) totals[s.employee] = { productive: 0, waste: 0 };
+        const mins = (new Date(s.end).getTime() - new Date(s.start).getTime()) / 60000;
+        if (s.type === 'Waste') totals[s.employee].waste += mins; else totals[s.employee].productive += mins;
+      });
+      els.employeeReport.innerHTML = Object.entries(totals).map(([name, t]) => `
+        <div class="list-item"><strong>${name}</strong><br><span class="muted">Productive: ${t.productive.toFixed(0)} min<br>Waste: ${t.waste.toFixed(0)} min</span></div>
+      `).join('') || '<div class="list-item">No completed sessions yet.</div>';
+      const value = data.inventory.reduce((s,i) => s + Number(i.qty) * Number(i.unitCost), 0);
+      els.inventoryReport.innerHTML = `
+        <div class="list-item"><strong>Total Stock Value</strong><br><span class="muted">${value.toFixed(2)}</span></div>
+        <div class="list-item"><strong>Lots Near Expiry</strong><br><span class="muted">${data.inventory.filter(i => i.status === 'Near Expiry').length}</span></div>
+        <div class="list-item"><strong>Low Stock Items</strong><br><span class="muted">${data.inventory.filter(i => i.status === 'Low Stock').length}</span></div>
+      `;
+      els.traceReport.innerHTML = `
+        <div class="list-item"><strong>Batches with Material Traceability</strong><br><span class="muted">${new Set(data.consumption.map(c => c.batchId)).size}</span></div>
+        <div class="list-item"><strong>Total Consumption Logs</strong><br><span class="muted">${data.consumption.length}</span></div>
+        <div class="list-item"><strong>Total Session Logs</strong><br><span class="muted">${data.sessions.length}</span></div>
+      `;
     }
-
     function renderAll() {
-      renderKPIs(getFilteredCases(), getFilteredInventory());
-      renderCases();
-      renderTime();
+      populateEmployeeSelectors();
+      populateLotSelector();
+      renderKPIs();
+      renderOverview();
+      renderSessions();
       renderInventory();
-      renderMachineUtilization();
-      renderStockAlerts();
-      renderApprovalList();
       renderTraceability();
-      renderQC();
       renderReports();
+    }
+    function startSession(forceWaste=false) {
+      if (data.activeSession) return showMessage('An active session already exists. End it first.', 'error');
+      const employee = els.employeeName.value;
+      const type = forceWaste ? 'Waste' : els.sessionType.value;
+      const workType = forceWaste ? 'Waste' : els.workType.value;
+      const machine = els.machine.value;
+      const orderNo = els.orderNumber.value.trim();
+      const batchId = els.batchId.value.trim();
+      const description = els.taskDescription.value.trim();
+      const wasteCategory = type === 'Waste' ? els.wasteCategory.value : '';
+      if (!employee) return showMessage('Please select an employee.', 'error');
+      if (type === 'Productive' && (!orderNo || !batchId || !description)) return showMessage('Order, batch, and task description are required.', 'error');
+      data.activeSession = {
+        id: Date.now(), employee, type, workType, machine, orderNo, batchId, description, wasteCategory,
+        start: new Date().toISOString(), end: null
+      };
+      if (batchId && orderNo && !data.cases.find(c => c.batchId === batchId)) {
+        data.cases.push({ batchId, orderNo, currentStep: workType, employee, machine, status: 'In Progress', next: 'Next Approval', next2: ['Next Step 1', 'Next Step 2'] });
+      }
+      saveData();
+      renderAll();
+      startTimer();
+      showMessage('Session started successfully.');
+    }
+    function stopSession() {
+      if (!data.activeSession) return showMessage('No active session to stop.', 'error');
+      data.sessions.push({ ...data.activeSession, end: new Date().toISOString() });
+      data.activeSession = null;
+      saveData();
+      renderAll();
+      stopTimer();
+      showMessage('Session closed successfully.');
+    }
+    function addStockLot() {
+      const item = els.stockItem.value.trim();
+      const lot = els.stockLot.value.trim();
+      const qty = Number(els.stockQty.value);
+      const unitCost = Number(els.stockCost.value);
+      if (!item || !lot || !qty) return showMessage('Item, lot, and quantity are required.', 'error');
+      data.inventory.push({
+        id: Date.now(), item, lot, qty, unitCost: unitCost || 0, purchaseDate: els.stockPurchase.value || todayDate(), expiryDate: els.stockExpiry.value || '',
+        supplier: els.stockSupplier.value.trim(), location: els.stockLocation.value.trim(), qr: els.stockQr.value.trim(), status: els.stockStatus.value
+      });
+      saveData();
+      renderAll();
+      showMessage('Stock lot saved successfully.');
+    }
+    function consumeMaterial() {
+      const lotId = Number(els.consumeLot.value);
+      const qtyUsed = Number(els.consumeQty.value);
+      const batchId = els.consumeBatch.value.trim();
+      const orderNo = els.consumeOrder.value.trim();
+      const employee = els.consumeEmployee.value;
+      const lot = data.inventory.find(i => i.id === lotId);
+      if (!lot || !qtyUsed || !batchId) return showMessage('Batch, lot, and quantity are required.', 'error');
+      if (qtyUsed > lot.qty) return showMessage('Not enough stock in this lot.', 'error');
+      lot.qty = Number((lot.qty - qtyUsed).toFixed(2));
+      if (lot.qty <= 5 && lot.status === 'Available') lot.status = 'Low Stock';
+      data.consumption.push({
+        id: Date.now(), batchId, orderNo, lot: lot.lot, item: lot.item, qty: qtyUsed, employee, timestamp: els.consumeDate.value ? new Date(els.consumeDate.value).toISOString() : new Date().toISOString()
+      });
+      saveData();
+      renderAll();
+      showMessage('Material consumed and linked to batch.');
+    }
+    function updateTimerUI() {
+      if (!data.activeSession) {
+        els.activeTimer.textContent = '00:00:00';
+        els.activeStatus.textContent = 'No active session';
+        return;
+      }
+      els.activeTimer.textContent = diffText(data.activeSession.start, new Date().toISOString());
+      els.activeStatus.textContent = `${data.activeSession.employee} • ${data.activeSession.type} • ${data.activeSession.workType}`;
+    }
+    function startTimer() {
+      stopTimer();
+      timerInterval = setInterval(updateTimerUI, 1000);
+      updateTimerUI();
+    }
+    function stopTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      updateTimerUI();
     }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -870,25 +874,33 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const tab = btn.dataset.tab;
-
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
         document.getElementById(tab + 'Tab').classList.remove('hidden');
-
-        els.pageTitle.textContent = tabMeta[tab][0];
-        els.pageSubtitle.textContent = tabMeta[tab][1];
+        const titles = {
+          overview: ['Overview', 'Functional operations dashboard for Cedarwings SAS.'],
+          employee: ['Employee Dashboard', 'Clocking on/off, task assignment, waste time, and live sessions.'],
+          inventory: ['Inventory Dashboard', 'Stock entry, stock consumption, lot traceability, and stock value.'],
+          traceability: ['Traceability', 'See labor and material history by batch.'],
+          reports: ['Reports', 'Employee, inventory, and traceability summaries.']
+        };
+        els.pageTitle.textContent = titles[tab][0];
+        els.pageSubtitle.textContent = titles[tab][1];
       });
     });
 
-    els.searchInput.addEventListener('input', renderAll);
-    els.statusFilter.addEventListener('change', renderAll);
-    els.resetBtn.addEventListener('click', () => {
-      els.searchInput.value = '';
-      els.statusFilter.value = 'all';
-      renderAll();
+    els.sessionType.addEventListener('change', () => {
+      els.wasteCategoryWrap.style.display = els.sessionType.value === 'Waste' ? 'block' : 'none';
     });
-    els.batchSelect.addEventListener('change', updateTraceabilityView);
+    els.startSessionBtn.addEventListener('click', () => startSession(false));
+    els.stopSessionBtn.addEventListener('click', stopSession);
+    els.startWasteBtn.addEventListener('click', () => startSession(true));
+    els.addStockBtn.addEventListener('click', addStockLot);
+    els.consumeBtn.addEventListener('click', consumeMaterial);
+    els.traceBatchSelect.addEventListener('change', renderTraceability);
+    els.globalSearch.addEventListener('input', renderAll);
 
     renderAll();
+    if (data.activeSession) startTimer();
   </script>
 </body>
 </html>
