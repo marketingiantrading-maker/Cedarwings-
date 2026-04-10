@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cedarwings SAS - Clocking</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f7fb;
+      padding: 30px;
+    }
+
+    .box {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .back-btn {
+      background: #64748b;
+    }
+
+    .status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Employee Clocking</h2>
+
+  <button class="back-btn" onclick="window.location.href='index.html'">
+    ← Back to Dashboard
+  </button>
+
+  <label>Employee</label>
+  <select id="employee">
+    <option value="">Select</option>
+    <option>Maya</option>
+    <option>Rami</option>
+    <option>Nadine</option>
+    <option>Georges</option>
+  </select>
+
+  <label>Work Type</label>
+  <input id="workType">
+
+  <label>Machine</label>
+  <input id="machine">
+
+  <label>Order No</label>
+  <input id="orderNo">
+
+  <label>Batch ID</label>
+  <input id="batchId">
+
+  <label>Description</label>
+  <textarea id="desc"></textarea>
+
+  <button id="startBtn">Start Work</button>
+  <button id="endBtn">End Work</button>
+
+  <div class="status" id="status">No active session</div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SUPABASE_CONFIG } from './config.js'
+
+const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+
+let activeSessionId = null
+
+document.getElementById('startBtn').onclick = async () => {
+
+  const employee = document.getElementById('employee').value
+
+  if (!employee) {
+    alert("Select employee")
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('time_sessions')
+    .insert([{
+      employee_name: employee,
+      session_type: 'productive',
+      work_type: document.getElementById('workType').value,
+      machine: document.getElementById('machine').value,
+      order_no: document.getElementById('orderNo').value,
+      batch_id: document.getElementById('batchId').value,
+      task_description: document.getElementById('desc').value,
+      started_at: new Date().toISOString()
+    }])
+    .select()
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  activeSessionId = data[0].id
+  document.getElementById('status').innerText = "Session started"
+}
+
+document.getElementById('endBtn').onclick = async () => {
+
+  if (!activeSessionId) {
+    alert("No session")
+    return
+  }
+
+  const { error } = await supabase
+    .from('time_sessions')
+    .update({
+      ended_at: new Date().toISOString()
+    })
+    .eq('id', activeSessionId)
+
+  if (error) {
+    alert(error.message)
+    return
+  }
+
+  document.getElementById('status').innerText = "Session ended"
+  activeSessionId = null
+}
+
+</script>
+
+</body>
+</html>
