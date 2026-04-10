@@ -3,46 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cedarwings SAS - Smart Clocking</title>
+  <title>Cedarwings SAS - Workflow Clocking</title>
   <style>
     :root{
       --bg:#f4f7fb;--card:#fff;--text:#1f2937;--muted:#64748b;--line:#dbe3ef;
-      --blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--orange:#d97706;--red:#dc2626;--gray:#64748b;
-      --sky:#0ea5e9;--purple:#7c3aed;
+      --blue:#2563eb;--sky:#0ea5e9;--green:#16a34a;--orange:#d97706;--red:#dc2626;--gray:#64748b;--purple:#7c3aed;
     }
     *{box-sizing:border-box}
     body{font-family:Arial,sans-serif;background:linear-gradient(180deg,#eef5ff,#f4f7fb);padding:24px;color:var(--text);margin:0}
-    .wrap{max-width:1100px;margin:auto}
-    .card{background:var(--card);border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.08);padding:22px;border:1px solid #e7eef8}
-    .top{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-    .full{grid-column:1/-1}
+    .wrap{max-width:1180px;margin:auto}
+    .top{display:grid;grid-template-columns:1.35fr .85fr;gap:16px;align-items:start}
+    .card{background:#fff;border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.08);padding:22px;border:1px solid #e7eef8}
     h1,h2,h3{margin:0 0 10px}
     .sub{color:var(--muted);line-height:1.5;margin-bottom:14px}
+    .section{border:1px solid var(--line);border-radius:14px;background:#fbfdff;padding:14px;margin-top:14px}
+    .section-title{font-size:15px;font-weight:800;margin-bottom:10px}
     label{display:block;margin-bottom:6px;font-weight:700;font-size:14px}
-    input,select,textarea,button{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);font-size:14px;font-family:inherit}
-    textarea{min-height:88px;resize:vertical}
-    button{border:none;cursor:pointer;color:#fff;font-weight:700;transition:.2s ease}
-    .primary{background:linear-gradient(135deg,var(--blue),var(--sky))}
-    .primary:hover{filter:brightness(.96)}
-    .secondary{background:linear-gradient(135deg,var(--gray),#475569)}
-    .secondary:hover{filter:brightness(.96)}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin:0 6px 6px 0}
-    .p-blue{background:#dbeafe;color:#1d4ed8}.p-green{background:#dcfce7;color:#166534}.p-orange{background:#ffedd5;color:#c2410c}.p-purple{background:#ede9fe;color:#6d28d9}
-    .statusbox{margin-top:14px;padding:14px;border-radius:14px;background:#eef4ff;border:1px solid #cfe0ff}
-    .status{font-weight:700;margin-bottom:6px}
+    input,textarea,button{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);font-size:14px;font-family:inherit}
+    textarea{min-height:86px;resize:vertical}
+    .lock{background:#f8fafc}
+    .muted{color:var(--muted)}
     .mini{font-size:13px;line-height:1.5;color:var(--muted)}
+    .secondary{background:linear-gradient(135deg,var(--gray),#475569);color:#fff;border:none;cursor:pointer;font-weight:700}
+    .secondary:hover,.primary:hover{filter:brightness(.96)}
+    .primary{background:linear-gradient(135deg,var(--blue),var(--sky));color:#fff;border:none;cursor:pointer;font-weight:700}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin:0 6px 6px 0}
+    .p-blue{background:#dbeafe;color:#1d4ed8}.p-green{background:#dcfce7;color:#166534}.p-orange{background:#ffedd5;color:#c2410c}.p-purple{background:#ede9fe;color:#6d28d9}.p-red{background:#fee2e2;color:#991b1b}
     .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
     .stat{background:linear-gradient(180deg,#f8fbff,#ffffff);border:1px solid var(--line);border-radius:14px;padding:12px}
     .stat .label{font-size:12px;color:var(--muted);margin-bottom:6px}
     .stat .value{font-size:22px;font-weight:800}
+    .current-job{margin-top:14px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #dbeafe}
     .timeline{margin-top:14px;display:grid;gap:10px}
     .item{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdff}
     .row{display:flex;gap:10px;flex-wrap:wrap}
-    .machine-note{margin-top:4px;font-size:12px;color:var(--muted)}
-    .lock{background:#f8fafc}
-    .accent{background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(14,165,233,.08));border:1px solid #dbeafe;padding:10px 12px;border-radius:12px}
-    @media(max-width:900px){.top,.stats,.grid{grid-template-columns:1fr}}
+    .choice-grid,.btn-grid{display:flex;flex-wrap:wrap;gap:8px}
+    .step-btn,.waste-btn{
+      text-align:center;cursor:pointer;font-weight:700;border-radius:999px;padding:8px 12px;transition:.2s ease;width:auto;
+      display:inline-flex;align-items:center;justify-content:center;min-height:38px
+    }
+    .step-btn{
+      border:1px solid #c7d2fe;background:#eef2ff;color:#1e3a8a;
+    }
+    .waste-btn{
+      border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;
+    }
+    .step-btn small,.waste-btn small{display:none}
+    .step-btn.active{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 6px 14px rgba(37,99,235,.18)}
+    .waste-btn.active{border-color:#ea580c;background:#ea580c;color:#fff;box-shadow:0 6px 14px rgba(234,88,12,.18)}
+    .step-btn[disabled]{opacity:.45;cursor:not-allowed;background:#f8fafc;color:#64748b;border-color:#e2e8f0}
+    .statusbox{margin-top:14px;padding:14px;border-radius:14px;background:#eef4ff;border:1px solid #cfe0ff}
+    .workflow-box{margin-top:10px;padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}
+    @media(max-width:980px){.top,.stats,.choice-grid,.btn-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -51,68 +63,88 @@
     <div class="card">
       <h1>Employee Clocking</h1>
       <div class="sub">
-        Default session type is productive, but you can switch to waste time with a waste category.
-        Employee is automatic and cannot be changed. Batch ID is generated automatically. One clock button only.
+        The system follows the production sequence for each order:
+        <strong>Printing → Cleaning → Thermoforming → Line Cut → Laser Marking → Packaging</strong>.
+        After you enter an order number, only the next allowed productive step is available.
       </div>
       <button class="secondary" onclick="window.location.href='index.html'">← Back to Dashboard</button>
 
-      <div style="margin-top:16px" class="grid">
-        <div>
-          <label>Employee</label>
-          <input id="employee" class="lock" readonly />
-          <div class="machine-note">Automatic employee. Not editable.</div>
-        </div>
-        <div>
-          <label>Session Type</label>
-          <select id="sessionType">
-            <option value="productive" selected>productive</option>
-            <option value="waste">waste</option>
-          </select>
-          <div class="machine-note">Default is productive.</div>
+      <div class="section">
+        <div class="section-title">Employee Info</div>
+        <label>Employee</label>
+        <input id="employee" class="lock" readonly />
+        <div class="mini">Automatic employee. Not editable.</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Main Entry</div>
+        <label>Order No *</label>
+        <input id="orderNo" placeholder="Example: ORD-1048" />
+        <div class="mini" style="margin-top:6px">Enter order number first. The system will load the next allowed step for that order.</div>
+
+        <div class="workflow-box">
+          <div class="mini"><strong>Current workflow for this order</strong></div>
+          <div style="margin-top:8px">
+            <span class="pill p-blue" id="lastCompletedPill">Last completed: none</span>
+            <span class="pill p-green" id="nextAllowedPill">Next allowed: Printing</span>
+          </div>
         </div>
 
-        <div>
-          <label>Order No *</label>
-          <input id="orderNo" placeholder="Example: ORD-1048" />
-        </div>
-        <div>
-          <label>Machine Code *</label>
-          <input id="machine" placeholder="Example: RP601 / TF-01 / QC Desk" />
-          <div class="machine-note">Work type will be filled automatically from machine code.</div>
-        </div>
-
-        <div>
-          <label>Work Type</label>
-          <input id="workType" class="lock" readonly placeholder="Auto from machine" />
-        </div>
-        <div>
-          <label>Batch ID</label>
-          <input id="batchId" class="lock" readonly placeholder="Auto-generated" />
+        <div style="margin-top:14px">
+          <label>Next Productive Step</label>
+          <div class="choice-grid">
+            <button type="button" class="step-btn" data-step="Printing" data-machine="3D Printing Machine 1" data-code="P1">Printing</button>
+            <button type="button" class="step-btn" data-step="Cleaning" data-machine="Cleaning Station" data-code="C1">Cleaning</button>
+            <button type="button" class="step-btn" data-step="Thermoforming" data-machine="Thermoforming Machine 1" data-code="T1">Thermoforming</button>
+            <button type="button" class="step-btn" data-step="Line Cut" data-machine="Line Cut Station" data-code="L1">Line Cut</button>
+            <button type="button" class="step-btn" data-step="Laser Marking" data-machine="Laser Marking Station" data-code="LM1">Laser Marking</button>
+            <button type="button" class="step-btn" data-step="Packaging" data-machine="Packaging Station" data-code="PK1">Packaging</button>
+          </div>
         </div>
 
-        <div class="full">
-          <label>Waste Time Category</label>
-          <select id="wasteCategory">
-            <option value="">Select category</option>
-            <option>Waiting for instructions</option>
-            <option>Waiting for machine</option>
-            <option>Waiting for material</option>
-            <option>Cleaning</option>
-            <option>Maintenance</option>
-            <option>Internal movement</option>
-            <option>Break</option>
-            <option>Idle / no task assigned</option>
-            <option>Rework / correction</option>
-            <option>Other</option>
-          </select>
-          <div class="machine-note">Use only when session type = waste.</div>
+        <div style="margin-top:14px">
+          <label>Waste Time Buttons</label>
+          <div class="btn-grid">
+            <button type="button" class="waste-btn" data-waste="Waiting for next job">W1 Waiting</button>
+            <button type="button" class="waste-btn" data-waste="Cleaning">W2 Cleaning</button>
+            <button type="button" class="waste-btn" data-waste="Waiting for machine">W3 Machine</button>
+            <button type="button" class="waste-btn" data-waste="Waiting for material">W4 Material</button>
+            <button type="button" class="waste-btn" data-waste="Break">W5 Break</button>
+            <button type="button" class="waste-btn" data-waste="Rework / correction">W6 Rework</button>
+          </div>
         </div>
+      </div>
 
-        <div class="full">
-          <label>Task / Operation Description</label>
-          <textarea id="desc" placeholder="Optional description"></textarea>
-          <div class="machine-note">Task description is not mandatory.</div>
+      <div class="section">
+        <div class="section-title">Auto-Filled Details</div>
+        <div class="choice-grid">
+          <div>
+            <label>Session Type</label>
+            <input id="sessionType" class="lock" readonly />
+          </div>
+          <div>
+            <label>Work Type</label>
+            <input id="workType" class="lock" readonly />
+          </div>
+          <div>
+            <label>Machine / Source</label>
+            <input id="machineDisplay" class="lock" readonly />
+          </div>
+          <div>
+            <label>Batch ID</label>
+            <input id="batchId" class="lock" readonly />
+          </div>
+          <div class="full">
+            <label>Waste Category</label>
+            <input id="wasteCategory" class="lock" readonly />
+          </div>
         </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Optional Note</div>
+        <label>Task / Operation Description</label>
+        <textarea id="desc" placeholder="Optional description"></textarea>
       </div>
 
       <div style="margin-top:12px">
@@ -121,7 +153,7 @@
 
       <div class="statusbox">
         <div class="status" id="status">No active session</div>
-        <div class="mini" id="statusDetails">Enter order number and machine code, then click clock.</div>
+        <div class="mini" id="statusDetails">Enter order number. The next allowed productive step will appear automatically. Waste buttons are always available.</div>
       </div>
     </div>
 
@@ -130,8 +162,8 @@
       <div>
         <span class="pill p-blue">Day Start: 08:00</span>
         <span class="pill p-orange">End: 17:00</span>
-        <span class="pill p-green">Auto pipeline</span>
-        <span class="pill p-purple">Auto batch ID</span>
+        <span class="pill p-green">Workflow locked</span>
+        <span class="pill p-purple">Auto pipeline</span>
       </div>
 
       <div class="stats">
@@ -141,8 +173,17 @@
         <div class="stat"><div class="label">Last Start</div><div class="value" id="lastStart">--:--</div></div>
       </div>
 
-      <div class="accent" style="margin-top:14px">
-        <h3 style="margin-bottom:8px">Today Summary</h3>
+      <div class="current-job">
+        <div class="section-title">Current Job In Progress</div>
+        <div class="mini" id="currentJobText">No open session now.</div>
+        <div style="margin-top:10px" class="row">
+          <span class="pill p-green" id="openSessionType">none</span>
+          <span class="pill p-blue" id="openSessionTime">00:00:00</span>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:14px">
+        <div class="section-title">Today Summary</div>
         <div class="mini" id="summaryText">No sessions loaded yet.</div>
       </div>
     </div>
@@ -162,11 +203,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { SUPABASE_CONFIG } from './config.js'
 
 const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+
+const WORKFLOW_STEPS = ['Printing','Cleaning','Thermoforming','Line Cut','Laser Marking','Packaging']
+
 const employeeEl = document.getElementById('employee')
-const sessionTypeEl = document.getElementById('sessionType')
-const machineEl = document.getElementById('machine')
-const workTypeEl = document.getElementById('workType')
 const orderNoEl = document.getElementById('orderNo')
+const sessionTypeEl = document.getElementById('sessionType')
+const workTypeEl = document.getElementById('workType')
+const machineDisplayEl = document.getElementById('machineDisplay')
 const batchIdEl = document.getElementById('batchId')
 const wasteCategoryEl = document.getElementById('wasteCategory')
 const descEl = document.getElementById('desc')
@@ -177,14 +221,17 @@ const firstStartEl = document.getElementById('firstStart')
 const lastStartEl = document.getElementById('lastStart')
 const summaryTextEl = document.getElementById('summaryText')
 const currentTimeEl = document.getElementById('currentTime')
+const currentJobTextEl = document.getElementById('currentJobText')
+const openSessionTypeEl = document.getElementById('openSessionType')
+const openSessionTimeEl = document.getElementById('openSessionTime')
+const lastCompletedPillEl = document.getElementById('lastCompletedPill')
+const nextAllowedPillEl = document.getElementById('nextAllowedPill')
+
 const STORAGE_KEY = 'cedarwings_active_session'
 const LOGIN_EMPLOYEE_KEY = 'cedarwings_logged_employee'
 const DAY_ANCHOR_PREFIX = 'cedarwings_day_anchor_'
 
-const MACHINE_WORKTYPE_MAP = {
-  'RP601':'3D Printing','RP602':'3D Printing','TF-01':'Thermoforming','TF01':'Thermoforming',
-  'QC DESK':'Quality Control','QC':'Quality Control','TRIM-01':'Trimming','LASER-01':'Laser Marking','PACK-01':'Packaging'
-}
+let selectedConfig = null
 
 function dayKey(date = new Date()) { return date.toISOString().slice(0,10) }
 function startOfToday() { const d = new Date(); d.setHours(0,0,0,0); return d }
@@ -198,18 +245,12 @@ function setStatus(title,details=''){statusEl.textContent=title;statusDetailsEl.
 function formatTime(iso){ if(!iso) return '--:--'; return new Date(iso).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) }
 function formatTimeSec(date){ return new Date(date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) }
 function minutesBetween(a,b){ return Math.max(0, Math.round((b-a)/60000)) }
-function detectWorkType(machineCode){
-  const raw = (machineCode || '').trim()
-  if(!raw) return ''
-  const upper = raw.toUpperCase()
-  if(MACHINE_WORKTYPE_MAP[upper]) return MACHINE_WORKTYPE_MAP[upper]
-  if(upper.startsWith('RP')) return '3D Printing'
-  if(upper.startsWith('TF')) return 'Thermoforming'
-  if(upper.includes('QC')) return 'Quality Control'
-  if(upper.includes('TRIM')) return 'Trimming'
-  if(upper.includes('LASER')) return 'Laser Marking'
-  if(upper.includes('PACK')) return 'Packaging'
-  return 'Production'
+function formatDuration(ms){
+  const total = Math.max(0, Math.floor(ms/1000))
+  const h = String(Math.floor(total/3600)).padStart(2,'0')
+  const m = String(Math.floor((total%3600)/60)).padStart(2,'0')
+  const s = String(total%60).padStart(2,'0')
+  return `${h}:${m}:${s}`
 }
 function generateBatchId() {
   const now = new Date()
@@ -234,30 +275,133 @@ function ensureDayAnchor() {
   }
   return anchor
 }
+function setProductiveSelection(btn) {
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.waste-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+
+  selectedConfig = {
+    session_type: 'productive',
+    machine: btn.dataset.machine,
+    work_type: btn.dataset.step,
+    waste_category: null
+  }
+  sessionTypeEl.value = 'productive'
+  machineDisplayEl.value = btn.dataset.machine
+  workTypeEl.value = btn.dataset.step
+  wasteCategoryEl.value = ''
+}
+function setWasteSelection(btn) {
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.waste-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+
+  selectedConfig = {
+    session_type: 'waste',
+    machine: btn.dataset.waste,
+    work_type: 'Waste Time',
+    waste_category: btn.dataset.waste
+  }
+  sessionTypeEl.value = 'waste'
+  machineDisplayEl.value = btn.dataset.waste
+  workTypeEl.value = 'Waste Time'
+  wasteCategoryEl.value = btn.dataset.waste
+}
+function lockWorkflowButtons(nextStep) {
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    const allowed = btn.dataset.step === nextStep
+    btn.disabled = !allowed
+    btn.classList.remove('active')
+  })
+}
+async function loadOrderWorkflow() {
+  const orderNo = orderNoEl.value.trim()
+  selectedConfig = None
+  sessionTypeEl.value = ''
+  workTypeEl.value = ''
+  machineDisplayEl.value = ''
+  wasteCategoryEl.value = ''
+  document.querySelectorAll('.step-btn,.waste-btn').forEach(b => b.classList.remove('active'))
+
+  if(!orderNo) {
+    lockWorkflowButtons('Printing')
+    lastCompletedPillEl.textContent = 'Last completed: none'
+    nextAllowedPillEl.textContent = 'Next allowed: Printing'
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('time_sessions')
+    .select('work_type,session_type,started_at')
+    .eq('order_no', orderNo)
+    .order('started_at', { ascending: true })
+
+  if(error){
+    setStatus('Workflow load error', error.message)
+    lockWorkflowButtons('Printing')
+    return
+  }
+
+  const productive = (data || []).filter(r => r.session_type === 'productive' && WORKFLOW_STEPS.includes(r.work_type))
+  const lastCompleted = productive.length ? productive[productive.length - 1].work_type : null
+  const nextIndex = lastCompleted ? WORKFLOW_STEPS.indexOf(lastCompleted) + 1 : 0
+  const nextStep = WORKFLOW_STEPS[nextIndex] || null
+
+  lastCompletedPillEl.textContent = `Last completed: ${lastCompleted || 'none'}`
+  nextAllowedPillEl.textContent = `Next allowed: ${nextStep || 'Completed'}`
+  if(nextStep){
+    lockWorkflowButtons(nextStep)
+  } else {
+    document.querySelectorAll('.step-btn').forEach(btn => btn.disabled = true)
+  }
+}
 function validateClock() {
   if(!employeeEl.value){ alert('Employee is required.'); return false }
   if(!orderNoEl.value.trim()){ alert('Order number is mandatory.'); return false }
-  if(!machineEl.value.trim()){ alert('Machine code is mandatory.'); return false }
-  if(sessionTypeEl.value === 'waste' && !wasteCategoryEl.value){
-    alert('Waste category is mandatory when session type is waste.')
+  if(!selectedConfig){
+    alert('Please select the next allowed productive step or a waste button.')
     return false
   }
   return true
 }
-function buildPayload(startedAt, endedAt=null, sessionType='productive') {
-  const isWaste = sessionType === 'waste'
+function buildPayload(startedAt, endedAt=null) {
   return {
     employee_name: employeeEl.value,
-    session_type: sessionType,
-    work_type: isWaste ? 'Waste Time' : (workTypeEl.value || detectWorkType(machineEl.value) || 'Production'),
-    machine: machineEl.value.trim() || null,
+    session_type: selectedConfig.session_type,
+    work_type: selectedConfig.work_type,
+    machine: selectedConfig.machine,
     order_no: orderNoEl.value.trim() || null,
     batch_id: batchIdEl.value.trim() || generateBatchId(),
     task_description: descEl.value.trim() || null,
-    waste_category: isWaste ? wasteCategoryEl.value : null,
+    waste_category: selectedConfig.waste_category,
     started_at: startedAt.toISOString(),
     ended_at: endedAt ? endedAt.toISOString() : null
   }
+}
+function clearEntryFields() {
+  orderNoEl.value = ''
+  sessionTypeEl.value = ''
+  workTypeEl.value = ''
+  machineDisplayEl.value = ''
+  wasteCategoryEl.value = ''
+  descEl.value = ''
+  batchIdEl.value = generateBatchId()
+  selectedConfig = null
+  document.querySelectorAll('.step-btn,.waste-btn').forEach(b => { b.classList.remove('active'); b.disabled = false })
+  lastCompletedPillEl.textContent = 'Last completed: none'
+  nextAllowedPillEl.textContent = 'Next allowed: Printing'
+}
+function updateOpenSessionPanel() {
+  const active = getActiveSession()
+  if(!active){
+    currentJobTextEl.textContent = 'No open session now.'
+    openSessionTypeEl.textContent = 'none'
+    openSessionTimeEl.textContent = '00:00:00'
+    return
+  }
+  currentJobTextEl.textContent = `${active.order_no || '-'} • ${active.machine || '-'} • ${active.work_type || '-'}`
+  openSessionTypeEl.textContent = active.session_type || 'productive'
+  openSessionTimeEl.textContent = formatDuration(Date.now() - new Date(active.started_at).getTime())
 }
 async function insertSession(payload){
   const { data, error } = await supabase.from('time_sessions').insert([payload]).select()
@@ -346,10 +490,8 @@ async function closeCurrentIfAny(now = new Date()) {
       ended_at: now.toISOString()
     }
     await insertSession(overtimePayload)
-    setStatus('Previous session closed with overtime', `Previous work was closed at 17:00 and overtime recorded until ${formatTimeSec(now)}.`)
   } else {
     await updateSessionEnd(active.id, now)
-    setStatus('Previous session closed', `Previous session closed at ${formatTimeSec(now)}.`)
   }
 
   clearActiveSession()
@@ -359,20 +501,18 @@ async function clockNewOrContinue() {
   if(!validateClock()) return
 
   const now = new Date()
-  workTypeEl.value = detectWorkType(machineEl.value)
   if(!batchIdEl.value.trim()) batchIdEl.value = generateBatchId()
 
   try{
     await closeCurrentIfAny(now)
-
-    const payload = buildPayload(now, null, sessionTypeEl.value)
+    const payload = buildPayload(now, null)
     const row = await insertSession(payload)
 
     saveActiveSession({
       id: row?.id || null,
       employee: employeeEl.value,
       started_at: now.toISOString(),
-      session_type: sessionTypeEl.value,
+      session_type: payload.session_type,
       order_no: payload.order_no,
       machine: payload.machine,
       batch_id: payload.batch_id,
@@ -381,21 +521,29 @@ async function clockNewOrContinue() {
     })
 
     setStatus(
-      `New ${sessionTypeEl.value} session started`,
+      `New ${payload.session_type} session started`,
       `${employeeEl.value} • Order ${payload.order_no} • ${payload.work_type} • ${formatTimeSec(now)}`
     )
+    updateOpenSessionPanel()
+    const justOrder = orderNoEl.value.trim()
+    clearEntryFields()
     await loadTodaySessions()
+    orderNoEl.value = justOrder
+    await loadOrderWorkflow()
   }catch(error){
     alert(error.message)
   }
 }
-function tickClock() { currentTimeEl.textContent = formatTimeSec(new Date()) }
+function tickClock() {
+  currentTimeEl.textContent = formatTimeSec(new Date())
+  updateOpenSessionPanel()
+}
 
-machineEl.addEventListener('input', () => { workTypeEl.value = detectWorkType(machineEl.value) })
-sessionTypeEl.addEventListener('change', () => {
-  if(sessionTypeEl.value !== 'waste') wasteCategoryEl.value = ''
-})
+document.querySelectorAll('.step-btn').forEach(btn => btn.addEventListener('click', () => setProductiveSelection(btn)))
+document.querySelectorAll('.waste-btn').forEach(btn => btn.addEventListener('click', () => setWasteSelection(btn)))
 document.getElementById('clockBtn').addEventListener('click', clockNewOrContinue)
+orderNoEl.addEventListener('change', loadOrderWorkflow)
+orderNoEl.addEventListener('blur', loadOrderWorkflow)
 
 window.addEventListener('load', async () => {
   ensureEmployeeLock()
@@ -408,11 +556,13 @@ window.addEventListener('load', async () => {
   if(active){
     setStatus('Active session detected', `${active.employee} • Started ${formatTime(active.started_at)} • Order ${active.order_no || '-'}`)
   } else {
-    setStatus('No active session', 'Enter order number and machine code, then click clock.')
+    setStatus('No active session', 'Enter order number. The next allowed productive step will be unlocked automatically.')
   }
 
   batchIdEl.value = generateBatchId()
+  updateOpenSessionPanel()
   await loadTodaySessions()
+  await loadOrderWorkflow()
   setInterval(loadTodaySessions, 15000)
 })
 </script>
