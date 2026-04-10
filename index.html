@@ -7,81 +7,323 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 30px;
-      background: #f5f7fb;
+      margin: 0;
+      background: #f4f7fb;
+      color: #1f2937;
     }
-    .box {
-      max-width: 600px;
+    .header {
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .header p {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+    }
+    .container {
+      padding: 20px;
+    }
+    .top-actions {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .secondary-btn {
+      background: #475569;
+    }
+    .secondary-btn:hover {
+      background: #334155;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .kpi-title {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background: #f8fafc;
+    }
+    .badge {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .green { background: #dcfce7; color: #166534; }
+    .orange { background: #fef3c7; color: #92400e; }
+    .red { background: #fee2e2; color: #991b1b; }
+    .blue { background: #dbeafe; color: #1d4ed8; }
+    .hidden {
+      display: none;
+    }
+    .clocking-box {
+      max-width: 700px;
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-    h2 {
-      margin-top: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
     label {
       display: block;
-      margin-top: 15px;
+      margin-top: 12px;
       margin-bottom: 6px;
       font-weight: bold;
     }
-    select, input, textarea, button {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-size: 14px;
+      box-sizing: border-box;
     }
-    button {
-      cursor: pointer;
-      background: #1d4ed8;
-      color: white;
-      border: none;
+    textarea {
+      min-height: 90px;
     }
-    button:hover {
-      background: #1e40af;
-    }
-    .status {
+    .status-text {
       margin-top: 15px;
       font-weight: bold;
+      color: #0f172a;
     }
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>Cedarwings SAS Dashboard</h1>
+    <p>Production report view with direct access to employee clocking.</p>
+  </div>
 
-  <div class="box">
-    <h2>Cedarwings SAS - Time Session</h2>
+  <div class="container">
+    <div class="top-actions">
+      <button id="showReportBtn">Report Dashboard</button>
+      <button id="showClockingBtn">Open Clocking</button>
+      <button id="testInsertBtn" class="secondary-btn">Test Insert</button>
+    </div>
 
-    <label for="employeeSelect">Employee</label>
-    <select id="employeeSelect">
-      <option value="">Select employee</option>
-      <option value="Maya">Maya</option>
-      <option value="Rami">Rami</option>
-      <option value="Nadine">Nadine</option>
-      <option value="Georges">Georges</option>
-    </select>
+    <div id="reportView">
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-title">Open Cases</div>
+          <div class="kpi-value">4</div>
+        </div>
+        <div class="card">
+          <div class="kpi-title">Productive Hours Today</div>
+          <div class="kpi-value">19.75</div>
+        </div>
+        <div class="card">
+          <div class="kpi-title">Waste Time Today</div>
+          <div class="kpi-value">2.75</div>
+        </div>
+        <div class="card">
+          <div class="kpi-title">Low Stock Alerts</div>
+          <div class="kpi-value">1</div>
+        </div>
+      </div>
 
-    <label for="workType">Work Type</label>
-    <input type="text" id="workType" placeholder="Example: 3D Printing" />
+      <div class="section">
+        <h2>Open Production Cases</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Batch</th>
+                <th>Order</th>
+                <th>Current Step</th>
+                <th>Employee</th>
+                <th>Machine</th>
+                <th>Status</th>
+                <th>Next Step</th>
+                <th>Next 2 Steps</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>B-240601</td>
+                <td>ORD-1048</td>
+                <td>3D Printing</td>
+                <td>Maya</td>
+                <td>RP601</td>
+                <td><span class="badge green">In Progress</span></td>
+                <td>Thermoforming</td>
+                <td>Trimming → Laser Marking</td>
+              </tr>
+              <tr>
+                <td>B-240602</td>
+                <td>ORD-1049</td>
+                <td>Thermoforming</td>
+                <td>Rami</td>
+                <td>TF-01</td>
+                <td><span class="badge blue">Waiting Approval</span></td>
+                <td>Trimming</td>
+                <td>Laser Marking → QC Final</td>
+              </tr>
+              <tr>
+                <td>B-240603</td>
+                <td>ORD-1050</td>
+                <td>Quality Control</td>
+                <td>Nadine</td>
+                <td>QC Desk</td>
+                <td><span class="badge orange">Pending</span></td>
+                <td>Finalization</td>
+                <td>Packaging → Dispatch</td>
+              </tr>
+              <tr>
+                <td>B-240604</td>
+                <td>ORD-1051</td>
+                <td>Printing Preparation</td>
+                <td>Georges</td>
+                <td>RP602</td>
+                <td><span class="badge red">Blocked</span></td>
+                <td>3D Printing</td>
+                <td>Thermoforming → Trimming</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-    <label for="machine">Machine</label>
-    <input type="text" id="machine" placeholder="Example: RP601" />
+      <div class="section">
+        <h2>Inventory Summary</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Lot</th>
+                <th>Qty</th>
+                <th>Unit Cost</th>
+                <th>Value</th>
+                <th>Expiry</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dental Resin Clear</td>
+                <td>LOT-R041</td>
+                <td>12</td>
+                <td>48</td>
+                <td>576</td>
+                <td>2026-06-22</td>
+                <td><span class="badge green">Available</span></td>
+              </tr>
+              <tr>
+                <td>Thermo Sheet 1.0</td>
+                <td>LOT-T110</td>
+                <td>14</td>
+                <td>4.2</td>
+                <td>58.8</td>
+                <td>2026-07-14</td>
+                <td><span class="badge orange">Low Stock</span></td>
+              </tr>
+              <tr>
+                <td>Dental Resin Clear</td>
+                <td>LOT-R039</td>
+                <td>3</td>
+                <td>48</td>
+                <td>144</td>
+                <td>2026-04-18</td>
+                <td><span class="badge blue">Near Expiry</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-    <label for="orderNo">Order Number</label>
-    <input type="text" id="orderNo" placeholder="Example: ORD-1001" />
+    <div id="clockingView" class="hidden">
+      <div class="clocking-box">
+        <h2>Employee Clocking</h2>
 
-    <label for="batchId">Batch ID</label>
-    <input type="text" id="batchId" placeholder="Example: B-1001" />
+        <label for="employeeSelect">Employee</label>
+        <select id="employeeSelect">
+          <option value="">Select employee</option>
+          <option value="Maya">Maya</option>
+          <option value="Rami">Rami</option>
+          <option value="Nadine">Nadine</option>
+          <option value="Georges">Georges</option>
+        </select>
 
-    <label for="taskDescription">Task Description</label>
-    <textarea id="taskDescription" placeholder="Describe the task"></textarea>
+        <label for="workType">Work Type</label>
+        <input type="text" id="workType" placeholder="Example: 3D Printing" />
 
-    <button id="startBtn">Start Work</button>
-    <button id="endBtn">End Work</button>
+        <label for="machine">Machine</label>
+        <input type="text" id="machine" placeholder="Example: RP601" />
 
-    <div class="status" id="statusText">No active session</div>
+        <label for="orderNo">Order Number</label>
+        <input type="text" id="orderNo" placeholder="Example: ORD-1001" />
+
+        <label for="batchId">Batch ID</label>
+        <input type="text" id="batchId" placeholder="Example: B-1001" />
+
+        <label for="taskDescription">Task Description</label>
+        <textarea id="taskDescription" placeholder="Describe the task"></textarea>
+
+        <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="startBtn">Start Work</button>
+          <button id="endBtn" class="secondary-btn">End Work</button>
+        </div>
+
+        <div class="status-text" id="statusText">No active session</div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -93,6 +335,12 @@
 
     let activeSessionId = null
 
+    const reportView = document.getElementById('reportView')
+    const clockingView = document.getElementById('clockingView')
+    const showReportBtn = document.getElementById('showReportBtn')
+    const showClockingBtn = document.getElementById('showClockingBtn')
+    const testInsertBtn = document.getElementById('testInsertBtn')
+
     const employeeSelect = document.getElementById('employeeSelect')
     const workType = document.getElementById('workType')
     const machine = document.getElementById('machine')
@@ -103,13 +351,42 @@
     const endBtn = document.getElementById('endBtn')
     const statusText = document.getElementById('statusText')
 
-    startBtn.addEventListener('click', async () => {
-      if (!employeeSelect.value) {
-        alert('Please select employee')
-        return
-      }
+    showReportBtn.addEventListener('click', () => {
+      reportView.classList.remove('hidden')
+      clockingView.classList.add('hidden')
+    })
 
-      if (!workType.value || !machine.value || !orderNo.value || !batchId.value || !taskDescription.value) {
+    showClockingBtn.addEventListener('click', () => {
+      reportView.classList.add('hidden')
+      clockingView.classList.remove('hidden')
+    })
+
+    testInsertBtn.addEventListener('click', async () => {
+      const { error } = await supabase
+        .from('time_sessions')
+        .insert([
+          {
+            employee_name: 'Test User',
+            session_type: 'productive',
+            work_type: '3D Printing',
+            machine: 'RP601',
+            order_no: 'ORD-TEST',
+            batch_id: 'B-TEST',
+            task_description: 'Testing insert',
+            started_at: new Date().toISOString()
+          }
+        ])
+
+      if (error) {
+        alert('Error: ' + error.message)
+        console.log(error)
+      } else {
+        alert('Inserted successfully!')
+      }
+    })
+
+    startBtn.addEventListener('click', async () => {
+      if (!employeeSelect.value || !workType.value || !machine.value || !orderNo.value || !batchId.value || !taskDescription.value) {
         alert('Please fill all fields')
         return
       }
@@ -139,7 +416,6 @@
       activeSessionId = data[0].id
       statusText.textContent = 'Active session started for ' + employeeSelect.value
       alert('Session started successfully')
-      console.log(data)
     })
 
     endBtn.addEventListener('click', async () => {
@@ -148,13 +424,10 @@
         return
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('time_sessions')
-        .update({
-          ended_at: new Date().toISOString()
-        })
+        .update({ ended_at: new Date().toISOString() })
         .eq('id', activeSessionId)
-        .select()
 
       if (error) {
         alert('End error: ' + error.message)
@@ -165,7 +438,6 @@
       statusText.textContent = 'Session ended'
       activeSessionId = null
       alert('Session ended successfully')
-      console.log(data)
     })
   </script>
 </body>
