@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cedarwings SAS - Inventory Pro Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a2f;
+      --panel2:#18233d;
+      --line:#2b3b61;
+      --text:#e8eefc;
+      --muted:#9eb0d1;
+      --blue:#4f8cff;
+      --cyan:#22d3ee;
+      --green:#22c55e;
+      --orange:#f59e0b;
+      --red:#ef4444;
+      --purple:#8b5cf6;
+      --pink:#ec4899;
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Arial,sans-serif;color:var(--text);
+      background:radial-gradient(circle at top left,#1d2e59 0,#0b1020 38%,#08101d 100%);
+      padding:20px;
+    }
+    .wrap{max-width:1450px;margin:auto}
+    .hero{
+      background:linear-gradient(135deg,rgba(79,140,255,.22),rgba(139,92,246,.16),rgba(34,211,238,.10));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;padding:24px;box-shadow:var(--shadow)
+    }
+    .hero-top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+    .hero h1{margin:0 0 8px;font-size:30px}
+    .hero p{margin:0;color:var(--muted);max-width:900px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    button,.btn,input,select,textarea{font:inherit}
+    .btn{
+      border:none;border-radius:14px;padding:11px 15px;cursor:pointer;font-weight:700;
+      color:white;background:linear-gradient(135deg,var(--blue),var(--purple));
+      box-shadow:0 10px 20px rgba(79,140,255,.18)
+    }
+    .btn.secondary{background:linear-gradient(135deg,#334155,#475569)}
+    .btn.green{background:linear-gradient(135deg,#16a34a,#22c55e)}
+    .btn.orange{background:linear-gradient(135deg,#d97706,#f59e0b)}
+    .layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:18px}
+    .card{
+      background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(12,18,33,.96));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)
+    }
+    .section-title{font-size:18px;font-weight:800;margin:0 0 8px}
+    .section-sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:18px}
+    .kpi{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px
+    }
+    .kpi .label{color:var(--muted);font-size:12px}
+    .kpi .value{font-size:28px;font-weight:800;margin-top:8px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .full{grid-column:1/-1}
+    label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+    input,select,textarea{
+      width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--line);
+      background:var(--panel2);color:var(--text)
+    }
+    textarea{min-height:86px;resize:vertical}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .toolbar input,.toolbar select{width:auto;min-width:220px}
+    .table-wrap{
+      overflow:auto;border:1px solid rgba(255,255,255,.06);border-radius:18px;background:rgba(255,255,255,.02)
+    }
+    table{width:100%;border-collapse:collapse;min-width:1100px}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;font-size:13px}
+    th{position:sticky;top:0;background:#14203a;color:#c9d7f3}
+    .pill{
+      display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700
+    }
+    .pill.green{background:rgba(34,197,94,.16);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+    .pill.orange{background:rgba(245,158,11,.16);color:#fdba74;border:1px solid rgba(245,158,11,.3)}
+    .pill.red{background:rgba(239,68,68,.16);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+    .pill.blue{background:rgba(79,140,255,.16);color:#bfdbfe;border:1px solid rgba(79,140,255,.3)}
+    .pill.purple{background:rgba(139,92,246,.16);color:#ddd6fe;border:1px solid rgba(139,92,246,.3)}
+    .list{display:grid;gap:10px}
+    .list-item{
+      padding:13px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)
+    }
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .chart-card{height:340px}
+    .chart-card canvas{width:100% !important;height:260px !important}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .tab-btn{
+      border:none;background:rgba(255,255,255,.06);color:var(--text);padding:10px 14px;border-radius:14px;cursor:pointer
+    }
+    .tab-btn.active{background:linear-gradient(135deg,var(--blue),var(--purple))}
+    .tab-panel.hidden{display:none}
+    .mini-note{font-size:12px;color:var(--muted);margin-top:4px}
+    @media(max-width:1200px){.layout,.charts,.split,.kpis{grid-template-columns:1fr 1fr}}
+    @media(max-width:900px){.layout,.charts,.split,.kpis,.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <h1>Cedarwings SAS — Inventory Pro Dashboard</h1>
+        <p>Professional stock dashboard with lot traceability, valuation, FEFO/FIFO readiness, expiry alerts, consumption analytics, and requisition workflow. fileciteturn12file0</p>
+      </div>
+      <div class="nav">
+        <button class="btn secondary" onclick="window.location.href='index.html'">Main Dashboard</button>
+        <button class="btn secondary" onclick="window.location.href='index18.html'">Index 18</button>
+        <button class="btn secondary" onclick="window.location.href='clocking.html'">Clocking</button>
+        <button class="btn secondary" onclick="window.location.href='time_management_report.html'">Time Report</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="label">Lots in Stock</div><div class="value" id="kpiLots">0</div></div>
+      <div class="kpi"><div class="label">Inventory Value</div><div class="value" id="kpiValue">0.00</div></div>
+      <div class="kpi"><div class="label">Low Stock</div><div class="value" id="kpiLow">0</div></div>
+      <div class="kpi"><div class="label">Near Expiry</div><div class="value" id="kpiExpiry">0</div></div>
+      <div class="kpi"><div class="label">Open Requisitions</div><div class="value" id="kpiReq">0</div></div>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="card chart-card">
+      <div class="section-title">Inventory Value by Category</div>
+      <div class="section-sub">Live valuation per category for financial follow-up.</div>
+      <canvas id="valueChart"></canvas>
+    </div>
+    <div class="card chart-card">
+      <div class="section-title">Consumption by Category</div>
+      <div class="section-sub">Usage quantities from stock history and production consumption.</div>
+      <canvas id="consumptionChart"></canvas>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="stock">Stock Dashboard</button>
+    <button class="tab-btn" data-tab="entry">Stock Entry</button>
+    <button class="tab-btn" data-tab="consume">Consumption</button>
+    <button class="tab-btn" data-tab="requisition">Requisition</button>
+  </div>
+
+  <div class="tab-panel" id="stockTab">
+    <div class="layout">
+      <div class="card">
+        <div class="section-title">Inventory Lots</div>
+        <div class="section-sub">Lot-based traceability with value, supplier, location, QR, and expiry control.</div>
+
+        <div class="toolbar">
+          <input id="searchInput" placeholder="Search item, lot, supplier, QR, location..." />
+          <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="available">Available</option>
+            <option value="low">Low Stock</option>
+            <option value="near_expiry">Near Expiry</option>
+            <option value="expired">Expired</option>
+          </select>
+          <button class="btn" id="refreshBtn">Refresh</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Lot</th>
+                <th>Qty</th>
+                <th>Unit Cost</th>
+                <th>Value</th>
+                <th>Purchase</th>
+                <th>Expiry</th>
+                <th>Supplier</th>
+                <th>Location</th>
+                <th>QR</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryBody">
+              <tr><td colspan="12">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="split">
+          <div>
+            <div class="section-title">Expiry / FEFO Alerts</div>
+            <div id="alertsList" class="list"></div>
+          </div>
+          <div>
+            <div class="section-title">Recent Stock History</div>
+            <div id="historyList" class="list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Inventory Intelligence</div>
+        <div class="section-sub">Visual control of storage status, movement history, and traceability readiness.</div>
+        <div class="list" id="insightList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel hidden" id="entryTab">
+    <div class="card">
+      <div class="section-title">Add Stock Lot</div>
+      <div class="section-sub">Records quantity, unit cost, purchase date, lot number, shelf life, QR code, and location. fileciteturn12file0</div>
+      <div class="grid">
+        <div><label>Item Name</label><input id="itemName" placeholder="Dental Resin Clear" /></div>
+        <div><label>Category</label><input id="itemCategory" placeholder="Resin / Thermo Sheet / Packaging" /></div>
+        <div><label>Lot Number</label><input id="lotNo" placeholder="LOT-R041" /></div>
+        <div><label>Serial Number</label><input id="serialNo" placeholder="Optional" /></div>
+        <div><label>Quantity</label><input id="qty" type="number" step="0.01" /></div>
+        <div><label>Unit Cost</label><input id="unitCost" type="number" step="0.01" /></div>
+        <div><label>Purchase Date</label><input id="purchaseDate" type="date" /></div>
+        <div><label>Expiry Date</label><input id="expiryDate" type="date" /></div>
+        <div><label>Shelf Life (days)</label><input id="shelfLife" type="number" /></div>
+        <div><label>Supplier</label><input id="supplierName" placeholder="Supplier name" /></div>
+        <div><label>Storage Location</label><input id="locationName" placeholder="Room / Rack / Shelf / Zone" /></div>
+        <div><label>QR Code</label><input id="qrCode" placeholder="Generated or scanned QR" /></div>
+        <div><label>Minimum Stock</label><input id="minStock" type="number" step="0.01" /></div>
+        <div><label>Reorder Point</label><input id="reorderPoint" type="number" step="0.01" /></div>
+        <div><label>Reorder Quantity</label><input id="reorderQty" type="number" step="0.01" /></div>
+        <div class="full"><label>Notes</label><textarea id="notes" placeholder="Optional note"></textarea></div>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn green" id="addStockBtn">Add Stock Lot</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel hidden" id="consumeTab">
+    <div class="card">
+      <div class="section-title">Consume Stock / Production Usage</div>
+      <div class="section-sub">Deduct materials manually now and later automatically by FIFO / FEFO, linked to production batch and order. fileciteturn12file0</div>
+      <div class="grid">
+        <div><label>Consume Lot</label><input id="consumeLot" placeholder="LOT-R041" /></div>
+        <div><label>Quantity Used</label><input id="consumeQty" type="number" step="0.01" /></div>
+        <div><label>Production Order</label><input id="consumeOrder" placeholder="ORD-1048" /></div>
+        <div><label>Production Batch</label><input id="consumeBatch" placeholder="B-240601" /></div>
+        <div class="full"><label>Usage Note</label><textarea id="consumeNote" placeholder="Optional usage note"></textarea></div>
+      </div>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn orange" id="consumeBtn">Consume Stock</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel hidden" id="requisitionTab">
+    <div class="layout">
+      <div class="card">
+        <div class="section-title">Create Requisition</div>
+        <div class="section-sub">Request stock internally with purpose, priority, required quantity, and department.</div>
+        <div class="grid">
+          <div><label>Requester Name</label><input id="reqRequester" placeholder="Requester name" /></div>
+          <div><label>Department</label><input id="reqDept" placeholder="Production / QC / Packing" /></div>
+          <div><label>Item Name</label><input id="reqItem" placeholder="Requested item" /></div>
+          <div><label>Quantity Requested</label><input id="reqQty" type="number" step="0.01" /></div>
+          <div><label>Purpose</label><input id="reqPurpose" placeholder="Production / Testing / QC" /></div>
+          <div><label>Priority</label>
+            <select id="reqPriority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div class="full"><label>Note</label><textarea id="reqNote" placeholder="Optional requisition note"></textarea></div>
+        </div>
+        <div class="toolbar" style="margin-top:14px">
+          <button class="btn green" id="createReqBtn">Create Requisition</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Requisition Queue</div>
+        <div class="section-sub">Track pending, approved, fulfilled, or rejected requests.</div>
+        <div class="list" id="requisitionList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { SUPABASE_CONFIG } from './config.js'
+const supabase = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey)
+
+const els = {
+  kpiLots: document.getElementById('kpiLots'),
+  kpiValue: document.getElementById('kpiValue'),
+  kpiLow: document.getElementById('kpiLow'),
+  kpiExpiry: document.getElementById('kpiExpiry'),
+  kpiReq: document.getElementById('kpiReq'),
+  inventoryBody: document.getElementById('inventoryBody'),
+  alertsList: document.getElementById('alertsList'),
+  historyList: document.getElementById('historyList'),
+  insightList: document.getElementById('insightList'),
+  requisitionList: document.getElementById('requisitionList'),
+  searchInput: document.getElementById('searchInput'),
+  statusFilter: document.getElementById('statusFilter'),
+}
+let valueChart, consumptionChart
+
+function daysUntil(dateStr){
+  if (!dateStr) return null
+  const today = new Date(); today.setHours(0,0,0,0)
+  const target = new Date(dateStr); target.setHours(0,0,0,0)
+  return Math.round((target - today) / 86400000)
+}
+function money(n){ return Number(n || 0).toFixed(2) }
+function fmtDate(v){ return v ? new Date(v).toLocaleDateString() : '-' }
+function computeStatus(row){
+  const qty = Number(row.available_qty || 0)
+  const minStock = Number(row.min_stock || 0)
+  const d = daysUntil(row.expiry_date)
+  if (d !== null && d < 0) return 'expired'
+  if (d !== null && d <= 30) return 'near_expiry'
+  if (minStock > 0 && qty <= minStock) return 'low'
+  return 'available'
+}
+function badge(status){
+  if (status === 'expired') return '<span class="pill red">Expired</span>'
+  if (status === 'near_expiry') return '<span class="pill orange">Near Expiry</span>'
+  if (status === 'low') return '<span class="pill purple">Low Stock</span>'
+  if (status === 'approved') return '<span class="pill blue">Approved</span>'
+  if (status === 'fulfilled') return '<span class="pill green">Fulfilled</span>'
+  if (status === 'rejected') return '<span class="pill red">Rejected</span>'
+  if (status === 'urgent') return '<span class="pill red">Urgent</span>'
+  return '<span class="pill green">Available</span>'
+}
+function chartConfig(type, labels, data, label){
+  return {
+    type,
+    data:{
+      labels,
+      datasets:[{
+        label,
+        data,
+        borderWidth:2,
+        backgroundColor:[
+          'rgba(79,140,255,.75)',
+          'rgba(34,197,94,.75)',
+          'rgba(245,158,11,.75)',
+          'rgba(139,92,246,.75)',
+          'rgba(236,72,153,.75)',
+          'rgba(34,211,238,.75)'
+        ],
+        borderColor:[
+          'rgba(79,140,255,1)',
+          'rgba(34,197,94,1)',
+          'rgba(245,158,11,1)',
+          'rgba(139,92,246,1)',
+          'rgba(236,72,153,1)',
+          'rgba(34,211,238,1)'
+        ]
+      }]
+    },
+    options:{
+      maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#d8e4ff'}}},
+      scales:{
+        x:{ticks:{color:'#b8c7e6'},grid:{color:'rgba(255,255,255,.06)'}},
+        y:{ticks:{color:'#b8c7e6'},grid:{color:'rgba(255,255,255,.06)'}}
+      }
+    }
+  }
+}
+function drawOrUpdateChart(existing, canvasId, config){
+  if (existing) existing.destroy()
+  return new Chart(document.getElementById(canvasId), config)
+}
+async function ensureSupplier(name){
+  if (!name) return null
+  const { data: existing } = await supabase.from('inventory_suppliers').select('id').eq('name', name).limit(1)
+  if (existing?.length) return existing[0].id
+  const { data, error } = await supabase.from('inventory_suppliers').insert([{ name }]).select().single()
+  if (error) throw error
+  return data.id
+}
+async function ensureLocation(name){
+  if (!name) return null
+  const { data: existing } = await supabase.from('inventory_locations').select('id').eq('name', name).limit(1)
+  if (existing?.length) return existing[0].id
+  const { data, error } = await supabase.from('inventory_locations').insert([{ name }]).select().single()
+  if (error) throw error
+  return data.id
+}
+async function ensureItem(name, category){
+  const { data: existing } = await supabase.from('inventory_items').select('id').eq('name', name).limit(1)
+  if (existing?.length) return existing[0].id
+  const { data, error } = await supabase.from('inventory_items').insert([{ name, category_name: category || null }]).select().single()
+  if (error) throw error
+  return data.id
+}
+async function refreshAll(){
+  const { data: lots, error } = await supabase.from('inventory_lots_view').select('*').order('created_at', { ascending: false })
+  if (error) {
+    els.inventoryBody.innerHTML = `<tr><td colspan="12">${error.message}</td></tr>`
+    return
+  }
+
+  const term = els.searchInput.value.trim().toLowerCase()
+  const statusFilter = els.statusFilter.value
+  const filtered = (lots || []).filter(row => {
+    const status = computeStatus(row)
+    const hay = `${row.item_name||''} ${row.category_name||''} ${row.lot_no||''} ${row.supplier_name||''} ${row.location_name||''} ${row.qr_code||''}`.toLowerCase()
+    return (!term || hay.includes(term)) && (statusFilter === 'all' || status === statusFilter)
+  })
+
+  let totalValue = 0, lowCount = 0, expiryCount = 0
+  const byCategoryValue = {}
+  filtered.forEach(r => {
+    const val = Number(r.available_qty || 0) * Number(r.unit_cost || 0)
+    totalValue += val
+    const cat = r.category_name || 'Uncategorized'
+    byCategoryValue[cat] = (byCategoryValue[cat] || 0) + val
+    const s = computeStatus(r)
+    if (s === 'low') lowCount += 1
+    if (s === 'near_expiry' || s === 'expired') expiryCount += 1
+  })
+
+  els.kpiLots.textContent = String(filtered.length)
+  els.kpiValue.textContent = money(totalValue)
+  els.kpiLow.textContent = String(lowCount)
+  els.kpiExpiry.textContent = String(expiryCount)
+
+  els.inventoryBody.innerHTML = filtered.length ? filtered.map(r => {
+    const status = computeStatus(r)
+    const value = Number(r.available_qty || 0) * Number(r.unit_cost || 0)
+    return `
+      <tr>
+        <td>${r.item_name || '-'}</td>
+        <td>${r.category_name || '-'}</td>
+        <td>${r.lot_no || '-'}</td>
+        <td>${r.available_qty ?? 0}</td>
+        <td>${money(r.unit_cost)}</td>
+        <td>${money(value)}</td>
+        <td>${fmtDate(r.purchase_date)}</td>
+        <td>${fmtDate(r.expiry_date)}</td>
+        <td>${r.supplier_name || '-'}</td>
+        <td>${r.location_name || '-'}</td>
+        <td>${r.qr_code || '-'}</td>
+        <td>${badge(status)}</td>
+      </tr>
+    `
+  }).join('') : `<tr><td colspan="12">No stock lots found.</td></tr>`
+
+  const alerts = filtered.filter(r => ['low','near_expiry','expired'].includes(computeStatus(r))).slice(0,8)
+  els.alertsList.innerHTML = alerts.length ? alerts.map(r => {
+    const st = computeStatus(r)
+    const extra = st === 'low' ? `Qty ${r.available_qty} ≤ Min ${r.min_stock || 0}` : `${daysUntil(r.expiry_date)} day(s) to expiry`
+    return `<div class="list-item"><strong>${r.item_name}</strong><br><span class="muted">${r.lot_no} • ${r.location_name || '-'}</span><br><br>${badge(st)} <span class="muted">${extra}</span></div>`
+  }).join('') : `<div class="list-item">No current alerts.</div>`
+
+  const { data: history } = await supabase
+    .from('inventory_stock_history')
+    .select('action_type, quantity, reference_no, note, created_at, unit_cost')
+    .order('created_at', { ascending: false }).limit(8)
+
+  els.historyList.innerHTML = (history || []).length ? history.map(h => `
+    <div class="list-item">
+      <strong>${h.action_type || '-'}</strong><br>
+      <span class="muted">${fmtDate(h.created_at)} • Qty ${h.quantity || 0} • Ref ${h.reference_no || '-'}</span><br><br>
+      <span class="muted">${h.note || ''}</span>
+    </div>
+  `).join('') : `<div class="list-item">No stock history found.</div>`
+
+  const insights = [
+    `Total current inventory value: ${money(totalValue)}`,
+    `${lowCount} lot(s) below minimum stock threshold`,
+    `${expiryCount} lot(s) need FEFO / expiry attention`,
+    `FIFO / FEFO consumption can be automated from lot dates and stock history`
+  ]
+  els.insightList.innerHTML = insights.map(x => `<div class="list-item">${x}</div>`).join('')
+
+  // Consumption chart from usage history
+  const { data: usageRows } = await supabase
+    .from('inventory_stock_history_usage_view')
+    .select('*')
+
+  const byUsageCat = {}
+  ;(usageRows || []).forEach(r => {
+    const cat = r.category_name || 'Uncategorized'
+    byUsageCat[cat] = (byUsageCat[cat] || 0) + Number(r.quantity || 0)
+  })
+
+  valueChart = drawOrUpdateChart(
+    valueChart,
+    'valueChart',
+    chartConfig('doughnut', Object.keys(byCategoryValue), Object.values(byCategoryValue), 'Inventory Value')
+  )
+  consumptionChart = drawOrUpdateChart(
+    consumptionChart,
+    'consumptionChart',
+    chartConfig('bar', Object.keys(byUsageCat), Object.values(byUsageCat), 'Consumption Qty')
+  )
+
+  const { data: reqs } = await supabase
+    .from('inventory_requisitions')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(8)
+
+  const openReq = (reqs || []).filter(r => ['pending','approved'].includes(r.status)).length
+  els.kpiReq.textContent = String(openReq)
+  els.requisitionList.innerHTML = (reqs || []).length ? reqs.map(r => `
+    <div class="list-item">
+      <strong>${r.item_name || '-'}</strong><br>
+      <span class="muted">${r.requester_name || '-'} • ${r.department || '-'} • Qty ${r.quantity_requested || 0}</span><br><br>
+      ${badge(r.status || 'pending')} ${badge(r.priority || 'normal')}
+      <div class="mini" style="margin-top:8px">${r.purpose || ''}${r.note ? ' • ' + r.note : ''}</div>
+    </div>
+  `).join('') : `<div class="list-item">No requisitions yet.</div>`
+}
+async function addStock(){
+  try{
+    const itemName = document.getElementById('itemName').value.trim()
+    if(!itemName){ alert('Item name is required'); return }
+    const itemId = await ensureItem(itemName, document.getElementById('itemCategory').value.trim())
+    const supplierId = await ensureSupplier(document.getElementById('supplierName').value.trim())
+    const locationId = await ensureLocation(document.getElementById('locationName').value.trim())
+    const qty = Number(document.getElementById('qty').value || 0)
+    const unitCost = Number(document.getElementById('unitCost').value || 0)
+
+    const { data: lot, error } = await supabase.from('inventory_lots').insert([{
+      item_id:itemId,
+      supplier_id:supplierId,
+      location_id:locationId,
+      lot_no:document.getElementById('lotNo').value.trim() || null,
+      serial_no:document.getElementById('serialNo').value.trim() || null,
+      qr_code:document.getElementById('qrCode').value.trim() || null,
+      purchase_date:document.getElementById('purchaseDate').value || null,
+      expiry_date:document.getElementById('expiryDate').value || null,
+      shelf_life_days:document.getElementById('shelfLife').value ? Number(document.getElementById('shelfLife').value) : null,
+      unit_cost:unitCost,
+      initial_qty:qty,
+      available_qty:qty,
+      min_stock:Number(document.getElementById('minStock').value || 0),
+      reorder_point:Number(document.getElementById('reorderPoint').value || 0),
+      reorder_qty:Number(document.getElementById('reorderQty').value || 0),
+      notes:document.getElementById('notes').value.trim() || null
+    }]).select().single()
+    if(error) throw error
+
+    const { error: hErr } = await supabase.from('inventory_stock_history').insert([{
+      lot_id:lot.id,
+      action_type:'purchase',
+      quantity:qty,
+      unit_cost:unitCost,
+      reference_no:lot.lot_no,
+      note:'Stock added'
+    }])
+    if(hErr) throw hErr
+
+    alert('Stock lot added successfully')
+    await refreshAll()
+  }catch(e){ alert(e.message) }
+}
+async function consumeStock(){
+  try{
+    const lotNo = document.getElementById('consumeLot').value.trim()
+    const qty = Number(document.getElementById('consumeQty').value || 0)
+    if(!lotNo || qty <= 0){ alert('Lot and quantity are required'); return }
+
+    const { data: lot, error } = await supabase.from('inventory_lots').select('*').eq('lot_no', lotNo).single()
+    if(error) throw error
+    if(Number(lot.available_qty || 0) < qty){ alert('Not enough available quantity'); return }
+
+    const newQty = Number(lot.available_qty || 0) - qty
+    const { error: updErr } = await supabase.from('inventory_lots').update({ available_qty:newQty }).eq('id', lot.id)
+    if(updErr) throw updErr
+
+    const orderNo = document.getElementById('consumeOrder').value.trim()
+    const batchId = document.getElementById('consumeBatch').value.trim()
+    const note = document.getElementById('consumeNote').value.trim()
+
+    await supabase.from('inventory_stock_history').insert([{
+      lot_id:lot.id,
+      action_type:'usage',
+      quantity:qty,
+      unit_cost:lot.unit_cost || 0,
+      reference_no:orderNo || batchId || lotNo,
+      production_order_no:orderNo || null,
+      production_batch_id:batchId || null,
+      note:note || 'Consumed in production'
+    }])
+
+    await supabase.from('inventory_batch_consumption').insert([{
+      lot_id:lot.id,
+      production_order_no:orderNo || null,
+      production_batch_id:batchId || null,
+      consumed_qty:qty,
+      note:note || null
+    }])
+
+    alert('Stock consumed successfully')
+    await refreshAll()
+  }catch(e){ alert(e.message) }
+}
+async function createRequisition(){
+  try{
+    const requester = document.getElementById('reqRequester').value.trim()
+    const dept = document.getElementById('reqDept').value.trim()
+    const item = document.getElementById('reqItem').value.trim()
+    const qty = Number(document.getElementById('reqQty').value || 0)
+    if(!requester || !item || qty <= 0){ alert('Requester, item, and quantity are required'); return }
+
+    const { error } = await supabase.from('inventory_requisitions').insert([{
+      requester_name: requester,
+      department: dept || null,
+      item_name: item,
+      quantity_requested: qty,
+      purpose: document.getElementById('reqPurpose').value.trim() || null,
+      priority: document.getElementById('reqPriority').value,
+      note: document.getElementById('reqNote').value.trim() || null,
+      status: 'pending'
+    }])
+    if(error) throw error
+
+    alert('Requisition created successfully')
+    await refreshAll()
+  }catch(e){ alert(e.message) }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    const tab = btn.dataset.tab
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'))
+    document.getElementById(tab + 'Tab').classList.remove('hidden')
+  })
+})
+
+document.getElementById('refreshBtn').addEventListener('click', refreshAll)
+document.getElementById('addStockBtn').addEventListener('click', addStock)
+document.getElementById('consumeBtn').addEventListener('click', consumeStock)
+document.getElementById('createReqBtn').addEventListener('click', createRequisition)
+els.searchInput.addEventListener('input', refreshAll)
+els.statusFilter.addEventListener('change', refreshAll)
+
+refreshAll()
+setInterval(refreshAll, 30000)
+</script>
+</body>
+</html>
