@@ -359,6 +359,7 @@
         <button class="tab-btn" data-tab="qc">Quality Control</button>
         <button class="tab-btn" data-tab="reports">Reports & Analytics</button>
         <button class="business-link-btn" onclick="window.location.href='index18.html'">Open Business Dashboard</button>
+        <button class="business-link-btn" onclick="window.location.href='time_management_report.html'">Open Time Report</button>
         <button class="clocking-link-btn" onclick="window.location.href='clocking.html'">Open Clocking System</button>
       </div>
     </aside>
@@ -380,6 +381,7 @@
           </select>
           <button class="action" id="resetBtn">Reset</button>
           <button class="action" id="openBusinessBtn" type="button">Open Index 18</button>
+          <button class="action" id="openTimeReportBtn" type="button">Time Report</button>
           <button class="action" id="openClockingBtn" type="button">Open Clocking</button>
         </div>
       </div>
@@ -408,6 +410,15 @@
             Open the employee time clocking page directly from the main dashboard.
             <div style="margin-top:12px;">
               <button class="action" type="button" onclick="window.location.href='clocking.html'">Go to Clocking</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Time Management Report</h3><span class="muted">Live report</span></div>
+          <div class="list-item">
+            Open the dedicated live page for productive, non-productive, overtime, and employee time sessions.
+            <div style="margin-top:12px;">
+              <button class="action" type="button" onclick="window.location.href='time_management_report.html'">Go to Time Report</button>
             </div>
           </div>
         </div>
@@ -947,6 +958,13 @@
     if (openBusinessBtn) {
       openBusinessBtn.addEventListener('click', () => {
         window.location.href = 'index18.html';
+      });
+    }
+
+    const openTimeReportBtn = document.getElementById('openTimeReportBtn');
+    if (openTimeReportBtn) {
+      openTimeReportBtn.addEventListener('click', () => {
+        window.location.href = 'time_management_report.html';
       });
     }
 
